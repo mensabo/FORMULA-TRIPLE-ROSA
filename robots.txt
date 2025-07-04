@@ -1,0 +1,6 @@
+# Permitir a todos los rastreadores acceder a todo el sitio
+User-agent: *
+Allow: /
+
+# Excepto la página de "gracias", que no aporta valor al SEO
+Disallow: /gracias.html

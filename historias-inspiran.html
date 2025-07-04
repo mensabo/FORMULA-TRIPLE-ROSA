@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historias que Inspiran - Fórmula Triple Rosa</title>
+    <meta name="description" content="Historias de esperanza, superación y vivencias compartidas en la lucha contra el cáncer de mama. Encuentra inspiración en Fórmula Triple Rosa.">
+    <meta property="og:title" content="Historias que Inspiran - Fórmula Triple Rosa">
+    <meta property="og:description" content="Historias de esperanza, superación y vivencias compartidas.">
+    <meta property="og:image" content="images/banner-hero-historias.png">
+    <meta property="og:url" content="URL_DE_TU_PAGINA_WEB_FINAL/historias-inspiran.html"> 
+    <meta property="og:type" content="website">
+    <link rel="icon" href="images/favicon.png" type="image/png">
+    <link rel="shortcut icon" href="images/favicon.png" type="image/png">
+    <link rel="stylesheet" href="style.css"> 
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="site-wrapper">
+        <header class="hero-section hero-section-internal-banner hero-section-historias">
+            <div class="hero-banner-image-container historias-banner-bg">
+                <nav class="main-nav">
+    <a href="index.html" class="nav-logo-link">
+        <img src="images/logo-nav.png" alt="Fórmula Triple Rosa Logo" class="nav-logo">
+    </a>
+    <div class="container">
+        <ul class="nav-links">
+            <li><a href="index.html">Inicio</a></li>
+            <li><a href="proyecto.html">El Proyecto</a></li>
+            <li><a href="recursos.html">Recursos</a></li>
+            <li><a href="entrevistas.html">Entrevistas</a></li>
+            <li><a href="bienestar.html">Rincón de la Calma</a></li>
+            <li><a href="historias-inspiran.html">Historias</a></li>
+            <li><a href="muro-esperanza.html">Muro Esperanza</a></li>
+            <li><a href="index.html#colaboradores">Colaboran</a></li>
+        </ul>
+        <div class="menu-toggle" id="mobile-menu"><span></span><span></span><span></span></div>
+    </div>
+</nav>
+                <div class="hero-text-overlay"> 
+                    <div class="container">
+                        <h1>Historias que <span class="highlight">Inspiran</span></h1>
+                        <p class="page-subtitle">Relatos de fortaleza, esperanza y comunidad en el viaje del cáncer de mama.</p>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <section id="historias-contenido" class="stories-section page-content-section">
+                <div class="container">
+                    <div class="intro-card intro-card--historias" data-aos="fade-up">
+                        <h3 class="intro-card-headline">Conectar e Inspirar</h3>
+                        <div class="intro-card-body">
+                           <p>Este es un espacio para compartir vivencias. Lee las historias de otras personas valientes y, si te sientes lista, comparte la tuya para acompañar a otras en su camino.</p>
+                        </div>
+                    </div>
+                    <div id="stories-list-container">
+                        <div class="stories-list-loading-skeleton">
+                            <div class="story-entry-skeleton">
+                                <div class="skeleton-header"><div class="skeleton-title"></div><div class="skeleton-meta"></div></div>
+                                <div class="skeleton-content"><div class="skeleton-line"></div><div class="skeleton-line"></div><div class="skeleton-line short"></div></div>
+                                <div class="skeleton-button"></div>
+                            </div>
+                            <div class="story-entry-skeleton">
+                                <div class="skeleton-header"><div class="skeleton-title"></div><div class="skeleton-meta"></div></div>
+                                <div class="skeleton-content"><div class="skeleton-line"></div><div class="skeleton-line"></div><div class="skeleton-line short"></div></div>
+                                <div class="skeleton-button"></div>
+                            </div>
+                        </div>
+                        <p class="no-stories">Aún no hay historias inspiradoras publicadas. ¡Anímate a compartir la tuya!</p>
+                        <p class="no-stories error">No se pudieron cargar las historias en este momento. Inténtalo más tarde.</p>
+                    </div>
+                    <div class="share-story-form-container">
+                        <h3>Comparte Tu Propia Historia Inspiradora</h3>
+                        <form id="shareStoryForm">
+                            <div class="form-group">
+                                <label for="storyAuthorName">Tu Nombre (o déjalo anónimo):</label>
+                                <input type="text" id="storyAuthorName" name="storyAuthorName" maxlength="70" placeholder="Ej: Laura M. o Un Corazón Valiente">
+                            </div>
+                            <div class="form-group">
+                                <label for="storyTitle">Título para tu Historia:</label>
+                                <input type="text" id="storyTitle" name="storyTitle" required maxlength="100" placeholder="Un título que capture tu vivencia">
+                            </div>
+                            <div class="form-group">
+                                <label for="storyTextContent">Tu Historia:</label>
+                                <textarea id="storyTextContent" name="storyTextContent" rows="10" required placeholder="Escribe aquí tu relato..."></textarea>
+                            </div>
+                            <div class="form-group">
+                                <input type="checkbox" id="storyConsent" name="storyConsent" required>
+                                <label for="storyConsent" class="checkbox-label">Doy mi consentimiento para que mi historia sea revisada y potencialmente publicada en este sitio web. Entiendo que puede ser editada por claridad o longitud.</label>
+                            </div>
+                            <button type="submit" class="cta-button submit-story-button">Enviar Mi Historia</button>
+                            <p id="shareStoryFormStatus" class="form-status-message"></p>
+                        </form>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <footer id="final-section" class="final-cta-footer-section">
+        <div class="container">
+            <h2>No estás <span class="highlight">sóla</span>. Únete a la familia de Fórmula Triple Rosa.</h2>
+            <p class="invitation-text">
+                Encuentra apoyo, información y mucho cariño siguiéndonos en nuestras redes. ¡Juntas somos más fuertes!
+            </p>
+            <a href="historias-inspiran.html#shareStoryForm" class="cta-button footer-cta-button">Comparte tu Historia</a>
+            <p class="social-invite-text">Síguenos y forma parte:</p>
+           <div class="final-social-media-links">
+    <a href="https://www.tiktok.com/@formula.triple.rosa" target="_blank" rel="noopener noreferrer" aria-label="Visita nuestro TikTok">
+        <img src="images/tiktok.png" alt="Logo de TikTok">
+        <span>TikTok</span>
+    </a>
+    <a href="https://www.instagram.com/formulatriplerosa/" target="_blank" rel="noopener noreferrer" aria-label="Visita nuestro Instagram">
+        <img src="images/instagram.png" alt="Logo de Instagram">
+        <span>Instagram</span>
+    </a>
+    <a href="https://www.youtube.com/@FormulaTripleRosa" target="_blank" rel="noopener noreferrer" aria-label="Visita nuestro canal de YouTube">
+        <img src="images/youtube.png" alt="Logo de YouTube">
+        <span>YouTube</span>
+    </a>
+</div>
+            <p class="copyright-text">
+                © 2024 Fórmula Triple Rosa por Yaiza Diaz. Con todo mi cariño y apoyo.
+            </p>
+        </div>
+    </footer>
+
+    <a href="#" id="scrollTopButton" class="scroll-top-button" aria-label="Volver arriba"><img src="images/icono-scroll-rosa-transparente.png" alt="Icono volver arriba" class="scroll-top-icon"></a>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-check-compat.js"></script>
+    <script src="scripts.js"></script>
+</body>
+</html>
