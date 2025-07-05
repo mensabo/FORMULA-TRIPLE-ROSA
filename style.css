@@ -459,14 +459,13 @@ a:not(.cta-button):not(.hero-cta-button):active {
     width: 100%;
 }
 .hero-section-internal-banner .hero-text-overlay .container {
-    padding-top: 20px;
-    padding-bottom: 20px;
-    padding-left: 6%;
-    padding-right: 4%;
-    margin-left: 0;
-    margin-right: 0;
+    padding-top: 40px; /* Un poco más de aire */
+    padding-bottom: 40px;
+    padding-left: 8%; /* Empujamos más desde la izquierda */
+    padding-right: 20px;
+    margin: 0;
     width: 100%;
-    max-width: none;
+    max-width: 60%; /* Hacemos que el contenedor de texto ocupe solo un 60% del ancho */
     text-align: left;
 }
 .hero-section-internal-banner .hero-text-overlay h1 {
@@ -507,7 +506,8 @@ a:not(.cta-button):not(.hero-cta-button):active {
     background-image: linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.55)), url('images/banner-hero-recursos.png'); 
 }
 .hero-section-entrevistas .entrevistas-banner-bg { 
-    background-image: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.65)), url('images/banner-hero-entrevistas.png'); 
+    background-image: linear-gradient(to right, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.2) 60%, rgba(0,0,0,0) 100%), url('images/banner-hero-entrevistas.png');
+    background-position: center right; /* ¡CLAVE! Mueve la imagen a la derecha */
 }
 .hero-section-calma .calma-banner-bg {
     background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url('images/zen.png');
@@ -2143,6 +2143,9 @@ textarea:focus-visible {
     .feature-item-content-overlay .icon { font-size: 2.2rem; margin-bottom: 15px;}
     .video-card h4 { font-size: 1.2rem;}
     .video-modal-content { max-width: 95%;}
+    .hero-section-internal-banner .hero-text-overlay .container {
+        max-width: 80%;
+    }
     .hero-section-internal-banner .hero-text-overlay h1 {
         font-size: clamp(1.8rem, 4vw, 2.5rem);
     }
@@ -2247,11 +2250,11 @@ textarea:focus-visible {
     .menu-toggle.active span:nth-child(3) {
         transform: translateY(-8px) rotate(-45deg); /* Ajuste fino */
     }
-
+    
     .main-nav .nav-links::before {
         display: block; /* Hacemos visible el logo en el menú móvil */
     }
-    
+
     .personal-message-section > .container { padding: 30px 20px; max-width: 88%; }
     .personal-message-section .message-content .quote { font-size: 1em; }
     .personal-message-section .message-content .signature { font-size: 1.4rem; }
@@ -2291,15 +2294,14 @@ textarea:focus-visible {
         min-height: 300px;
     }
 
-    .intro-card--historias .intro-card-headline,
-    .intro-card--historias .intro-card-body {
-        text-align: center;
-    }
-
     .intro-card--historias {
         grid-template-columns: 1fr;
         gap: 3rem;
         padding: 4rem 1.5rem;
+    }
+    .intro-card--historias .intro-card-headline,
+    .intro-card--historias .intro-card-body {
+        text-align: center;
     }
     .intro-card--historias .intro-card-body p {
         border-left: none;
@@ -2356,11 +2358,16 @@ textarea:focus-visible {
     .video-modal { padding: 10px; }
     .video-modal-content { width: 100%; }
     .video-modal-close-button { top: -25px; right: 5px; font-size: 25px;}
-    .hero-section-internal-banner .hero-text-overlay h1 {
-        font-size: clamp(1.8rem, 4vw, 2.2rem);
+    .hero-section-internal-banner .hero-text-overlay .container {
+        max-width: 100%;
+        padding-left: 20px;
+        padding-right: 20px;
+        text-align: center;
     }
+    .hero-section-internal-banner .hero-text-overlay h1,
     .hero-section-internal-banner .hero-text-overlay .page-subtitle {
-        font-size: 1rem; padding-left: 0; padding-right: 0;
+        text-align: center;
+        max-width: 100%;
     }
     #stories-list-container .story-entry { padding: 20px 15px; margin-bottom: 30px;}
     #stories-list-container .story-title { font-size: clamp(1.3rem, 4vw, 1.6rem); }
