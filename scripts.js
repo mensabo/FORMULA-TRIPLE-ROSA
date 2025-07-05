@@ -325,7 +325,6 @@ function setupHistoriaDetallePage() {
                     if (metaOgDescElement) metaOgDescElement.setAttribute('content', excerptForMeta);
                     if (metaOgUrlElement) metaOgUrlElement.setAttribute('content', window.location.href);
 
-                    // Inyectar el script de Schema.org para el artículo
                     const schemaScript = document.createElement('script');
                     schemaScript.type = 'application/ld+json';
                     const schemaData = {
@@ -345,7 +344,7 @@ function setupHistoriaDetallePage() {
                             "name": "Fórmula Triple Rosa",
                             "logo": {
                                 "@type": "ImageObject",
-                                "url": "images/logo-nav.png" // Asume que la URL completa será añadida luego
+                                "url": "images/logo-nav.png"
                             }
                         },
                         "datePublished": data.timestamp ? data.timestamp.toDate().toISOString() : new Date().toISOString(),
@@ -417,7 +416,6 @@ function setupEntrevistasPage() {
                 interviewCard.setAttribute('data-aos', 'fade-up');
                 interviewCard.setAttribute('data-video-id', data.youtubeVideoId);
 
-                // HTML de la tarjeta simplificado
                 interviewCard.innerHTML = `
                     <div class="interview-card-thumbnail-wrapper">
                         <img src="https://i.ytimg.com/vi/${data.youtubeVideoId}/hqdefault.jpg" alt="Miniatura de la entrevista: ${escapeHTML(data.titulo)}" class="interview-card-image">
@@ -563,7 +561,6 @@ function setupMuroEsperanzaPage() {
     }
 }
 
-// --- FUNCIÓN PARA HISTORIA DESTACADA AUTOMÁTICA ---
 async function setupFeaturedStory() {
     const featuredStorySection = document.getElementById('featured-story');
     if (!featuredStorySection) {
@@ -575,53 +572,44 @@ async function setupFeaturedStory() {
 
     if (!dbInstance) {
         console.error("Firebase no está listo para cargar contenido destacado.");
-        // Dejamos el texto por defecto si Firebase no carga
         return;
     }
 
     try {
-        // Obtenemos todas las historias y mensajes que estén APROBADOS
-        const storyQuery = dbInstance.collection('historiasEnviadas').where('aprobado', '==', true);
-        const messageQuery = dbInstance.collection('mensajesEsperanza').where('aprobado', '==', true);
+        const storyQuery = dbInstance.collection('historiasEnviadas')
+            .where('destacado', '==', true)
+            .where('aprobado', '==', true);
+
+        const messageQuery = dbInstance.collection('mensajesEsperanza')
+            .where('destacado', '==', true)
+            .where('aprobado', '==', true);
 
         const [storySnapshot, messageSnapshot] = await Promise.all([
             storyQuery.get(),
             messageQuery.get()
         ]);
 
-        const approvedItems = [];
-        // Añadimos las historias aprobadas a nuestra lista
-        storySnapshot.forEach(doc => approvedItems.push(doc.data()));
-        // Añadimos los mensajes aprobados a nuestra lista
-        messageSnapshot.forEach(doc => approvedItems.push(doc.data()));
+        const featuredItems = [];
+        storySnapshot.forEach(doc => featuredItems.push(doc.data()));
+        messageSnapshot.forEach(doc => featuredItems.push(doc.data()));
 
-        // Si hay al menos un elemento aprobado (historia o mensaje)
-        if (approvedItems.length > 0) {
-            // Seleccionamos uno al azar
-            const randomIndex = Math.floor(Math.random() * approvedItems.length);
-            const randomItem = approvedItems[randomIndex];
+        if (featuredItems.length > 0) {
+            const randomIndex = Math.floor(Math.random() * featuredItems.length);
+            const randomItem = featuredItems[randomIndex];
 
-            // Comprobamos si es una historia (tiene campo 'contenido') o un mensaje
             if (randomItem.contenido) {
-                // Es una historia, mostramos un extracto
-                const extracto = randomItem.contenido.length > 200 
-                    ? randomItem.contenido.substring(0, 200) + '...' 
-                    : randomItem.contenido;
-                quoteTextElement.textContent = `“${escapeHTML(extracto)}”`;
+                const extracto = randomItem.contenido.length > 200 ? randomItem.contenido.substring(0, 200) + '...' : randomItem.contenido;
+                quoteTextElement.textContent = `“${extracto}”`;
             } else {
-                // Es un mensaje del muro
                 quoteTextElement.textContent = `“${escapeHTML(randomItem.texto)}”`;
             }
-            // Mostramos el autor
             quoteAuthorElement.textContent = `– ${escapeHTML(randomItem.autor)}`;
 
         } else {
-            // Si no hay NADA aprobado, dejamos el mensaje por defecto
-            console.log("No se encontró contenido aprobado para destacar.");
+            console.log("No se encontró contenido destacado (ni historia ni mensaje).");
         }
     } catch (error) {
-        console.error("Error al cargar contenido destacado automatizado: ", error);
-        // En caso de error, también dejamos el mensaje por defecto
+        console.error("Error al cargar contenido destacado: ", error);
     }
 }
 
