@@ -7,8 +7,8 @@
     <meta name="description" content="Vídeos, herramientas para el bienestar y recursos prácticos para acompañarte durante el cáncer de mama.">
     <meta property="og:title" content="Recursos de Apoyo - Fórmula Triple Rosa">
     <meta property="og:description" content="Vídeos, herramientas para el bienestar y recursos prácticos.">
-    <meta property="og:image" content="images/banner-hero-recursos.png"> 
-    <meta property="og:url" content="URL_DE_TU_PAGINA_WEB_FINAL/recursos.html"> 
+    <meta property="og:image" content="https://formula-triple-rosa.vercel.app/images/banner-hero-recursos.png"> 
+    <meta property="og:url" content="https://formula-triple-rosa.vercel.app/recursos.html"> 
     <meta property="og:type" content="website">
     <link rel="icon" href="images/favicon.png" type="image/png">
     <link rel="shortcut icon" href="images/favicon.png" type="image/png">
@@ -56,9 +56,24 @@
                     <div class="container">
                         <h2>Vídeos que te <span class="highlight">acompañarán</span>:</h2>
                         <div class="videos-grid">
-                            <div class="video-card"><a href="https://www.youtube.com/watch?v=VIDEO_ID_1" target="_blank" rel="noopener noreferrer"><div class="video-thumbnail-wrapper"><img src="images/Autoexploracion.png" alt="Miniatura del vídeo Cógelo a Tiempo"></div><h4>Cógelo a Tiempo</h4></a></div>
-                            <div class="video-card"><a href="https://www.youtube.com/watch?v=VIDEO_ID_2" target="_blank" rel="noopener noreferrer"><div class="video-thumbnail-wrapper"><img src="images/miniatura-quimio.png" alt="Miniatura del vídeo Preparándote para tu Sesión"></div><h4>Preparándote para tu Sesión</h4></a></div>
-                            <div class="video-card"><a href="https://www.youtube.com/watch?v=VIDEO_ID_3" target="_blank" rel="noopener noreferrer"><div class="video-thumbnail-wrapper"><img src="images/RODRIGO.PNG" alt="Miniatura del vídeo Osteopatía para el Cáncer"></div><h4>Osteopatía para el Cáncer</h4></a></div>
+                            <div class="video-card">
+                                <a href="#" data-video-id="SaXR0oTdeos">
+                                    <div class="video-thumbnail-wrapper"><img src="images/autoexploracion.png" alt="Miniatura del vídeo Cógelo a Tiempo"></div>
+                                    <h4>Cógelo a Tiempo</h4>
+                                </a>
+                            </div>
+                            <div class="video-card">
+                                <a href="#" data-video-id="WRpmByXC5yI">
+                                    <div class="video-thumbnail-wrapper"><img src="images/miniatura-quimio.png" alt="Miniatura del vídeo Preparándote para tu Sesión"></div>
+                                    <h4>Preparándote para tu Sesión</h4>
+                                </a>
+                            </div>
+                            <div class="video-card">
+                                <a href="#" data-video-id="imkr2q6URQM">
+                                    <div class="video-thumbnail-wrapper"><img src="images/rodrigo.png" alt="Miniatura del vídeo Osteopatía para el Cáncer"></div>
+                                    <h4>Osteopatía para el Cáncer</h4>
+                                </a>
+                            </div>
                         </div>
                         <div style="text-align: center; margin-top: 40px;">
                             <a href="https://www.youtube.com/@FormulaTripleRosa" target="_blank" rel="noopener noreferrer" class="cta-button">Visita Nuestro Canal de YouTube</a>
@@ -108,6 +123,13 @@
             </p>
         </div>
     </footer>
+
+    <div id="videoModal" class="video-modal">
+        <div class="video-modal-content">
+            <span class="video-modal-close-button">×</span>
+            <div id="youtubePlayerContainer"></div>
+        </div>
+    </div>
 
     <a href="#" id="scrollTopButton" class="scroll-top-button" aria-label="Volver arriba"><img src="images/icono-scroll-rosa-transparente.png" alt="Icono volver arriba" class="scroll-top-icon"></a>
     
