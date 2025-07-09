@@ -72,7 +72,6 @@
                             </div>
                         </a>
                         
-                        <!-- Tarjeta "Háblate con Amor" actualizada con el ID correcto del Short -->
                         <a href="#" class="resource-card resource-card--video" data-video-id="os6FiWw1kNM" data-aos="zoom-in-up" data-aos-delay="100">
                             <div class="resource-card-thumbnail" style="background-image: url('images/hablate-con-amor.png');">
                                 <div class="play-icon-overlay">▶</div>
@@ -125,13 +124,9 @@
                         <span>YouTube</span>
                     </a>
                 </div>
-                                <!-- Contador de Visitas -->
-                <div class="visit-counter" title="Visitas a la web">
-                    <svg class="heart-icon" viewBox="0 0 32 29.6">
-                        <path d="M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,9.5,11.9,16,21.2
-                        c6.1-9.3,16-12.1,16-21.2C32,3.8,28.2,0,23.6,0z"/>
-                    </svg>
-                    <span id="visitCount">Cargando...</span>
+                                               <!-- Contador de Visitas -->
+                <div id="visitor-counter" title="Visitas a la web">
+                    <span id="visit-count-display">Cargando...</span>
                 </div>
 
                 <p class="copyright-text">
@@ -150,8 +145,13 @@
             </div>
         </div>
 
-        <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-        <script src="scripts.js"></script>
     </div>
+
+    <!-- BLOQUE DE SCRIPTS CON EL ORDEN CORRECTO -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-check-compat.js"></script>
+    <script src="scripts.js"></script>
 </body>
 </html>

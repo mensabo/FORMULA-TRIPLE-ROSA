@@ -1,95 +1,84 @@
-document.addEventListener('DOMContentLoaded', () => {
+/* global firebase, AOS */
 
-    // --- CONFIGURACIÓN Y EJECUCIÓN INICIAL ---
+document.addEventListener('DOMContentLoaded', () => {
+    // --- 1. CONFIGURACIÓN Y EJECUCIÓN INICIAL ---
     setupMainMenu();
     setupScrollTopButton();
     setupVideoModal();
     if (typeof AOS !== 'undefined') {
         AOS.init({ once: true, duration: 800 });
     }
-    
-    // --- LÓGICA ESPECÍFICA DE CADA PÁGINA ---
+
+    // --- 2. LÓGICA QUE REQUIERE FIREBASE ---
+    initializeFirebaseAndAppCheck().then(() => {
+        if (!dbInstance) {
+            console.error("La conexión con Firebase no se ha podido establecer. Las funciones dinámicas no operarán.");
+            return;
+        }
+        
+        // Carga de contenido dinámico según la página
+        if (document.getElementById('stories-list-container')) setupHistoriasInspiranPage();
+        if (document.getElementById('storyDetailContentArticle')) setupHistoriaDetallePage();
+        if (document.getElementById('interviews-list-container')) setupEntrevistasPage();
+        if (document.getElementById('hopeMessageForm')) setupMuroEsperanzaPage();
+        if (document.getElementById('featured-story')) setupFeaturedStory();
+
+        // Llamada al contador de visitas
+        handleVisitorCount();
+    });
+
+    // --- 3. LÓGICA ESPECÍFICA SIN FIREBASE ---
     const pagePath = window.location.pathname.split('/').pop();
-
-    const needsFirebase = 
-        pagePath.includes('historias-inspiran') ||
-        pagePath.includes('historia-detalle') ||
-        pagePath.includes('muro-esperanza') ||
-        pagePath.includes('entrevistas') ||
-        pagePath.includes('index') ||
-        pagePath === ''; // Para la raíz del sitio
-
-    if (needsFirebase) {
-        initializeFirebaseAndAppCheck().then(() => {
-            // Una vez Firebase está listo, ejecutamos las funciones que lo necesitan.
-            if (document.getElementById('stories-list-container')) setupHistoriasInspiranPage();
-            if (document.getElementById('storyDetailContentArticle')) setupHistoriaDetallePage();
-            if (document.getElementById('interviews-list-container')) setupEntrevistasPage();
-            if (document.getElementById('hopeMessageForm')) setupMuroEsperanzaPage();
-            if (document.getElementById('featured-story')) setupFeaturedStory();
-        });
-    }
-    
     if (pagePath.includes('bienestar')) {
         setupAffirmationGenerator();
     }
 });
 
-// --- SCRIPT PARA MENÚ HAMBURGUESA ---
+// ===================================================================
+// ===== FUNCIONES GLOBALES DE INTERFAZ (MENÚ, SCROLL, MODAL) ======
+// ===================================================================
+
 function setupMainMenu() {
     const menuToggle = document.getElementById('mobile-menu');
     const navLinksList = document.querySelector('.main-nav .nav-links');
+    if (!menuToggle || !navLinksList) return;
 
-    if (menuToggle && navLinksList) {
-        menuToggle.addEventListener('click', () => {
-            navLinksList.classList.toggle('active');
-            menuToggle.classList.toggle('active');
-        });
+    menuToggle.addEventListener('click', () => {
+        navLinksList.classList.toggle('active');
+        menuToggle.classList.toggle('active');
+    });
 
-        const currentPath = window.location.pathname.split('/').pop() || 'index.html';
+    const currentPath = window.location.pathname.split('/').pop() || 'index.html';
+    navLinksList.querySelectorAll('a').forEach(link => {
+        const linkPath = new URL(link.href, window.location.origin).pathname.split('/').pop() || 'index.html';
+        link.classList.remove('active-link');
+        if (linkPath === currentPath && !link.hash) {
+            link.classList.add('active-link');
+        }
+    });
 
-        navLinksList.querySelectorAll('a').forEach(link => {
-            const linkPath = new URL(link.href, window.location.origin).pathname.split('/').pop() || 'index.html';
-            link.classList.remove('active-link');
-            if (linkPath === currentPath && !link.hash) {
-                link.classList.add('active-link');
+    navLinksList.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+            if (navLinksList.classList.contains('active')) {
+                navLinksList.classList.remove('active');
+                menuToggle.classList.remove('active');
             }
         });
-
-        navLinksList.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', () => {
-                if (navLinksList.classList.contains('active')) {
-                    navLinksList.classList.remove('active');
-                    menuToggle.classList.remove('active');
-                }
-            });
-        });
-    }
+    });
 }
 
-// --- SCRIPT PARA BOTÓN "VOLVER ARRIBA" ---
 function setupScrollTopButton() {
     const scrollTopButton = document.getElementById('scrollTopButton');
-    if (scrollTopButton) {
-        window.addEventListener('scroll', () => {
-            if (window.pageYOffset > 200) {
-                scrollTopButton.classList.add('show');
-            } else {
-                scrollTopButton.classList.remove('show');
-            }
-        });
-
-        scrollTopButton.addEventListener('click', (e) => {
-            e.preventDefault();
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        });
-    }
+    if (!scrollTopButton) return;
+    window.addEventListener('scroll', () => {
+        scrollTopButton.classList.toggle('show', window.pageYOffset > 200);
+    });
+    scrollTopButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
 }
 
-// --- SCRIPT PARA MODAL DE VÍDEO ---
 function setupVideoModal() {
     const videoModal = document.getElementById('videoModal');
     if (!videoModal) return;
@@ -99,27 +88,22 @@ function setupVideoModal() {
     let youtubeIframe;
 
     function openModal(videoId) {
-        if (videoId && youtubePlayerContainer && videoModalCloseButton) {
-            youtubeIframe = document.createElement('iframe');
-            youtubeIframe.setAttribute('src', `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`);
-            youtubeIframe.setAttribute('frameborder', '0');
-            youtubeIframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
-            youtubeIframe.setAttribute('allowfullscreen', '');
-
-            youtubePlayerContainer.innerHTML = '';
-            youtubePlayerContainer.appendChild(youtubeIframe);
-
-            videoModal.style.display = "flex";
-            document.body.style.overflow = 'hidden';
-        }
+        if (!videoId || !youtubePlayerContainer) return;
+        youtubeIframe = document.createElement('iframe');
+        youtubeIframe.setAttribute('src', `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1`);
+        youtubeIframe.setAttribute('frameborder', '0');
+        youtubeIframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
+        youtubeIframe.setAttribute('allowfullscreen', '');
+        youtubePlayerContainer.innerHTML = '';
+        youtubePlayerContainer.appendChild(youtubeIframe);
+        videoModal.style.display = "flex";
+        document.body.style.overflow = 'hidden';
     }
 
     function closeModal() {
         if (videoModal) videoModal.style.display = "none";
-        if (youtubePlayerContainer) {
-            if (youtubeIframe && youtubeIframe.contentWindow) {
-                youtubeIframe.contentWindow.postMessage('{"event":"command","func":"stopVideo","args":""}', '*');
-            }
+        if (youtubePlayerContainer && youtubeIframe) {
+            youtubeIframe.src = '';
             youtubePlayerContainer.innerHTML = '';
         }
         youtubeIframe = null;
@@ -130,27 +114,26 @@ function setupVideoModal() {
         const videoTrigger = event.target.closest('[data-video-id]');
         if (videoTrigger) {
             event.preventDefault();
-            const videoId = videoTrigger.getAttribute('data-video-id');
-            openModal(videoId);
+            openModal(videoTrigger.getAttribute('data-video-id'));
         }
     });
 
     if (videoModalCloseButton) videoModalCloseButton.addEventListener('click', closeModal);
-
     videoModal.addEventListener('click', (event) => {
         if (event.target === videoModal) closeModal();
     });
-
     document.addEventListener('keydown', (event) => {
         if (event.key === "Escape" && videoModal.style.display === "flex") closeModal();
     });
 }
 
-// --- INICIALIZACIÓN DE FIREBASE Y APP CHECK (VERSIÓN ROBUSTA) ---
+// ===================================================================
+// ===== INICIALIZACIÓN DE FIREBASE Y FUNCIONES RELACIONADAS =======
+// ===================================================================
+
 let dbInstance = null;
 async function initializeFirebaseAndAppCheck() {
-    if (dbInstance) return; // Si ya está inicializado, no hacer nada
-
+    if (dbInstance) return;
     const firebaseConfig = {
         apiKey: "AIzaSyBB533KldqKqzvUpjvdThSg9WrxIVAkd6Q",
         authDomain: "formula-triple-rosa-esperanza.firebaseapp.com",
@@ -160,12 +143,13 @@ async function initializeFirebaseAndAppCheck() {
         appId: "1:957472891906:web:3a372b9e9d0110b90cb31b",
         measurementId: "G-3X9XB2J5EM"
     };
-    
+
     try {
         const app = firebase.initializeApp(firebaseConfig);
-        // La siguiente línea es solo para desarrollo local.
-        self.FIREBASE_APPCHECK_DEBUG_TOKEN = "fd783e9c-994e-4967-97dc-63d22ba9796e"; 
         
+        // MODO DEBUG PARA DESARROLLO LOCAL
+        window.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+
         if (firebase.appCheck) {
             const appCheck = firebase.appCheck(app);
             appCheck.activate('6Le-61grAAAAACX4nt-zWj75t4t7F1FC--RJU5PC', true);
@@ -176,328 +160,291 @@ async function initializeFirebaseAndAppCheck() {
     }
 }
 
-// --- FUNCIONES UTILITARIAS ---
-function escapeHTML(str) {
-    if (str === null || typeof str === 'undefined') return '';
-    const div = document.createElement('div');
-    div.appendChild(document.createTextNode(str));
-    return div.innerHTML;
+async function handleVisitorCount() {
+    const countElement = document.getElementById('visit-count-display');
+    const counterContainer = document.getElementById('visitor-counter');
+    if (!counterContainer || !dbInstance) return;
+
+    try {
+        const counterRef = dbInstance.collection('siteStats').doc('visits');
+        await dbInstance.runTransaction(async (transaction) => {
+            const doc = await transaction.get(counterRef);
+            let currentCount = 0;
+            if (doc.exists && typeof doc.data().count === 'number') {
+                currentCount = doc.data().count;
+            } else if (!doc.exists) {
+                transaction.set(counterRef, { count: 0 });
+            }
+            if (countElement) countElement.textContent = currentCount;
+            if (!sessionStorage.getItem('hasVisitedFTR')) {
+                const newCount = currentCount + 1;
+                transaction.update(counterRef, { count: newCount });
+                if (countElement) countElement.textContent = newCount;
+                sessionStorage.setItem('hasVisitedFTR', 'true');
+            }
+        });
+    } catch (error) {
+        console.error("Error al gestionar el contador de visitas. Verificar reglas de Firestore.", error);
+        if (counterContainer) counterContainer.style.display = 'none';
+    }
 }
 
-function formatDate(timestamp) {
-    if (!timestamp || !timestamp.toDate) return "Fecha desconocida";
-    return timestamp.toDate().toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' });
-}
-
-// --- FUNCIONES DE LÓGICA DE PÁGINA ---
+// ===================================================================
+// ===== LÓGICA DE CONTENIDO ESPECÍFICO DE CADA PÁGINA =============
+// ===================================================================
 
 function setupHistoriasInspiranPage() {
-    const shareStoryForm = document.getElementById('shareStoryForm');
-    const storiesListContainer = document.getElementById('stories-list-container');
+    const form = document.getElementById('shareStoryForm');
+    const container = document.getElementById('stories-list-container');
+    if (!form || !container || !dbInstance) return;
 
-    if (shareStoryForm) {
-        const shareStoryFormStatus = document.getElementById('shareStoryFormStatus');
-        shareStoryForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const submitButton = shareStoryForm.querySelector('button[type="submit"]');
-            submitButton.classList.add('loading');
-            submitButton.disabled = true;
-            shareStoryFormStatus.textContent = "Enviando tu historia...";
-            shareStoryFormStatus.className = 'form-status-message';
-            shareStoryFormStatus.style.display = 'block';
-
-            const autor = shareStoryForm.storyAuthorName.value.trim() || "Anónimo";
-            const titulo = shareStoryForm.storyTitle.value.trim();
-            const contenido = shareStoryForm.storyTextContent.value.trim();
-            const consentimiento = shareStoryForm.storyConsent.checked;
-
-            if (!titulo || !contenido || !consentimiento) {
-                shareStoryFormStatus.textContent = "Por favor, completa todos los campos y acepta el consentimiento.";
-                shareStoryFormStatus.className = 'form-status-message error';
-                submitButton.classList.remove('loading');
-                submitButton.disabled = false;
-                return;
-            }
-
-            dbInstance.collection('historiasEnviadas').add({
-                autor, titulo, contenido,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+    const statusEl = document.getElementById('shareStoryFormStatus');
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = e.target.querySelector('button[type="submit"]');
+        btn.classList.add('loading');
+        btn.disabled = true;
+        statusEl.className = 'form-status-message';
+        statusEl.style.display = 'block';
+        statusEl.textContent = 'Enviando...';
+        try {
+            await dbInstance.collection('historiasEnviadas').add({
+                autor: e.target.storyAuthorName.value.trim() || "Anónimo",
+                titulo: e.target.storyTitle.value.trim(),
+                contenido: e.target.storyTextContent.value.trim(),
+                consentimiento: e.target.storyConsent.checked,
                 aprobado: false,
-                destacado: false
-            }).then(() => {
-                shareStoryFormStatus.textContent = "¡Gracias por compartir! Tu historia será revisada pronto.";
-                shareStoryFormStatus.className = 'form-status-message success';
-                shareStoryForm.reset();
-            }).catch((error) => {
-                console.error("Error al enviar la historia: ", error);
-                shareStoryFormStatus.textContent = "Error al enviar. Por favor, inténtalo de nuevo.";
-                shareStoryFormStatus.className = 'form-status-message error';
-            }).finally(() => {
-                setTimeout(() => {
-                     submitButton.classList.remove('loading');
-                     submitButton.disabled = false;
-                }, 1000);
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
             });
-        });
-    }
+            statusEl.textContent = '¡Gracias! Tu historia ha sido enviada para revisión.';
+            statusEl.classList.add('success');
+            e.target.reset();
+        } catch (error) {
+            console.error("Error al enviar historia:", error);
+            statusEl.textContent = 'Error al enviar. Inténtalo de nuevo.';
+            statusEl.classList.add('error');
+        } finally {
+            setTimeout(() => {
+                btn.classList.remove('loading');
+                btn.disabled = false;
+            }, 1500);
+        }
+    });
 
-    if (storiesListContainer) {
-        const skeletonContainer = storiesListContainer.querySelector('.stories-list-loading-skeleton');
-        const noStoriesMsg = storiesListContainer.querySelector('.no-stories:not(.error)');
-        const errorStoriesMsg = storiesListContainer.querySelector('.no-stories.error');
-        skeletonContainer.style.display = 'block';
+    const skeleton = container.querySelector('.stories-list-loading-skeleton');
+    const noStoriesMsg = container.querySelector('.no-stories:not(.error)');
+    const errorMsg = container.querySelector('.no-stories.error');
+    skeleton.style.display = 'block';
+    noStoriesMsg.style.display = 'none';
+    errorMsg.style.display = 'none';
 
-        dbInstance.collection('historiasEnviadas').where('aprobado', '==', true).orderBy('timestamp', 'desc').limit(10)
-            .onSnapshot((snapshot) => {
-                skeletonContainer.style.display = 'none';
-                storiesListContainer.querySelectorAll('.story-entry').forEach(el => el.remove());
-                if (snapshot.empty) {
-                    noStoriesMsg.style.display = 'block';
-                    return;
-                }
-                noStoriesMsg.style.display = 'none';
+    dbInstance.collection('historiasEnviadas').where('aprobado', '==', true).orderBy('timestamp', 'desc')
+        .onSnapshot(snapshot => {
+            skeleton.style.display = 'none';
+            container.querySelectorAll('.story-entry').forEach(el => el.remove());
+            if (snapshot.empty) {
+                noStoriesMsg.style.display = 'block';
+            } else {
                 snapshot.forEach(doc => {
                     const data = doc.data();
-                    const storyElement = document.createElement('article');
-                    storyElement.classList.add('story-entry');
-                    const extracto = data.contenido.length > 250 ? escapeHTML(data.contenido.substring(0, 250)) + '...' : escapeHTML(data.contenido);
-                    const storyLink = `historia-detalle.html?id=${doc.id}`;
-                    storyElement.innerHTML = `<header class="story-header"><h3 class="story-title">${escapeHTML(data.titulo)}</h3><p class="story-meta">Por: <span class="story-author">${escapeHTML(data.autor)}</span> | Fecha: <time datetime="${data.timestamp.toDate().toISOString().split('T')[0]}">${formatDate(data.timestamp)}</time></p></header><div class="story-content"><p class="story-excerpt">${extracto.replace(/\n/g, '<br>')}</p><a href="${storyLink}" class="cta-button cta-small read-more-button">Leer más →</a></div>`;
-                    storiesListContainer.appendChild(storyElement);
+                    const article = document.createElement('article');
+                    article.className = 'story-entry';
+                    const excerpt = data.contenido.length > 250 ? data.contenido.substring(0, 250) + '...' : data.contenido;
+                    article.innerHTML = `
+                        <header class="story-header">
+                            <h3 class="story-title">${escapeHTML(data.titulo)}</h3>
+                            <p class="story-meta">Por: <span class="story-author">${escapeHTML(data.autor)}</span> | ${formatDate(data.timestamp)}</p>
+                        </header>
+                        <div class="story-content">
+                            <p class="story-excerpt">${escapeHTML(excerpt).replace(/\n/g, '<br>')}</p>
+                            <a href="historia-detalle.html?id=${doc.id}" class="cta-button cta-small">Leer más →</a>
+                        </div>`;
+                    container.appendChild(article);
                 });
-            }, (error) => {
-                console.error("Error al cargar historias: ", error);
-                skeletonContainer.style.display = 'none';
-                errorStoriesMsg.style.display = 'block';
-            });
-    }
+            }
+        }, error => {
+            console.error("Error al cargar historias. Revisa reglas e índices de Firestore.", error);
+            skeleton.style.display = 'none';
+            errorMsg.style.display = 'block';
+        });
 }
 
-function setupHistoriaDetallePage() {
-    const storyDetailContentArticle = document.getElementById('storyDetailContentArticle');
-    const storyDetailTitleElement = document.getElementById('storyDetailTitle');
-    const storyDetailMetaElement = document.getElementById('storyDetailMeta');
-    
-    const params = new URLSearchParams(window.location.search);
-    const storyId = params.get('id');
-    if (!storyId) {
-        storyDetailTitleElement.textContent = "Historia no encontrada";
-        storyDetailContentArticle.innerHTML = "<p>No se ha especificado un ID de historia válido.</p>";
+async function setupHistoriaDetallePage() {
+    const titleEl = document.getElementById('storyDetailTitle');
+    const metaEl = document.getElementById('storyDetailMeta');
+    const contentEl = document.getElementById('storyDetailContentArticle');
+    const storyId = new URLSearchParams(window.location.search).get('id');
+
+    if (!storyId || !dbInstance) {
+        if (titleEl) titleEl.textContent = "Historia no encontrada";
+        if (contentEl) contentEl.innerHTML = "<p>No se ha especificado un ID de historia válido.</p>";
         return;
     }
 
-    dbInstance.collection('historiasEnviadas').doc(storyId).get()
-        .then((doc) => {
-            storyDetailContentArticle.innerHTML = '';
-            if (doc.exists && doc.data().aprobado === true) {
-                const data = doc.data();
-                document.title = `${escapeHTML(data.titulo)} - Fórmula Triple Rosa`;
-                storyDetailTitleElement.textContent = escapeHTML(data.titulo);
-                storyDetailMetaElement.innerHTML = `Por: <span class="story-author">${escapeHTML(data.autor)}</span> | Fecha: <time datetime="${data.timestamp ? data.timestamp.toDate().toISOString().split('T')[0] : ''}">${formatDate(data.timestamp)}</time>`;
-                
-                const parrafos = escapeHTML(data.contenido).split(/\n\s*\n/);
-                parrafos.forEach(pText => {
-                    if (pText.trim() !== '') {
-                        const pElem = document.createElement('p');
-                        pElem.innerHTML = pText.replace(/\n/g, '<br>');
-                        storyDetailContentArticle.appendChild(pElem);
-                    }
-                });
-            } else {
-                storyDetailTitleElement.textContent = "Historia no encontrada";
-                storyDetailMetaElement.textContent = '';
-                storyDetailContentArticle.innerHTML = "<p>La historia que buscas no existe o aún no ha sido aprobada.</p>";
-            }
-        })
-        .catch((error) => {
-            console.error("Error al cargar detalle de la historia: ", error);
-            storyDetailTitleElement.textContent = "Error al cargar";
-            storyDetailContentArticle.innerHTML = "<p>Ocurrió un error al cargar la historia. Por favor, inténtalo más tarde.</p>";
-        });
+    try {
+        const doc = await dbInstance.collection('historiasEnviadas').doc(storyId).get();
+        if (doc.exists && doc.data().aprobado) {
+            const data = doc.data();
+            document.title = `${escapeHTML(data.titulo)} | Fórmula Triple Rosa`;
+            titleEl.textContent = escapeHTML(data.titulo);
+            metaEl.innerHTML = `Por: <span class="story-author">${escapeHTML(data.autor)}</span> | ${formatDate(data.timestamp)}`;
+            contentEl.innerHTML = escapeHTML(data.contenido).split('\n').map(p => `<p>${p || ' '}</p>`).join('');
+        } else {
+            titleEl.textContent = "Historia no encontrada";
+            contentEl.innerHTML = "<p>La historia que buscas no existe o aún no ha sido aprobada.</p>";
+        }
+    } catch (error) {
+        console.error("Error al cargar detalle de historia:", error);
+        titleEl.textContent = "Error al cargar";
+        contentEl.innerHTML = "<p>Ocurrió un error. Inténtalo más tarde.</p>";
+    }
 }
 
-function setupEntrevistasPage() {
-    const interviewsListContainer = document.getElementById('interviews-list-container');
-    if (!interviewsListContainer) return;
+async function setupEntrevistasPage() {
+    const container = document.getElementById('interviews-list-container');
+    if (!container || !dbInstance) return;
 
-    const loadingMsg = interviewsListContainer.querySelector('.loading-interviews');
-    const noMsg = interviewsListContainer.querySelector('.no-interviews');
-    const errorMsg = interviewsListContainer.querySelector('.error-interviews');
+    const loadingEl = container.querySelector('.loading-interviews');
+    const noInterviewsEl = container.querySelector('.no-interviews');
+    const errorEl = container.querySelector('.error-interviews');
+    loadingEl.style.display = 'block';
+    noInterviewsEl.style.display = 'none';
+    errorEl.style.display = 'none';
 
-    loadingMsg.style.display = 'block';
-
-    dbInstance.collection('entrevistas').where('publicado', '==', true).orderBy('fecha', 'desc').get()
-        .then(snapshot => {
-            loadingMsg.style.display = 'none';
-            if (snapshot.empty) {
-                noMsg.style.display = 'block';
-                return;
-            }
+    try {
+        const snapshot = await dbInstance.collection('entrevistas').where('publicado', '==', true).orderBy('fecha', 'desc').get();
+        loadingEl.style.display = 'none';
+        if (snapshot.empty) {
+            noInterviewsEl.style.display = 'block';
+        } else {
             snapshot.forEach(doc => {
                 const data = doc.data();
-                const interviewCard = document.createElement('a'); 
-                interviewCard.href = '#'; 
-                interviewCard.classList.add('resource-card', 'resource-card--video'); 
-                interviewCard.setAttribute('data-aos', 'zoom-in-up');
-                interviewCard.setAttribute('data-video-id', data.youtubeVideoId);
-                interviewCard.innerHTML = `
+                const card = document.createElement('a');
+                card.href = '#';
+                card.className = 'resource-card resource-card--video';
+                card.dataset.aos = 'zoom-in-up';
+                card.dataset.videoId = data.youtubeVideoId;
+                card.innerHTML = `
                     <div class="resource-card-thumbnail" style="background-image: url('https://i.ytimg.com/vi/${data.youtubeVideoId}/hqdefault.jpg');">
                         <div class="play-icon-overlay">▶</div>
                     </div>
                     <div class="resource-card-content">
                         <h3>${escapeHTML(data.titulo)}</h3>
                         <p>${escapeHTML(data.descripcion)}</p>
-                        <p class="interview-date" style="font-style: italic; font-size: 0.9em; color: #888;">${formatDate(data.fecha)}</p>
-                    </div>
-                `;
-                interviewsListContainer.appendChild(interviewCard);
+                    </div>`;
+                container.appendChild(card);
             });
             if (typeof AOS !== 'undefined') AOS.refresh();
-        })
-        .catch(error => {
-            console.error("Error al cargar entrevistas: ", error);
-            loadingMsg.style.display = 'none';
-            errorMsg.style.display = 'block';
-        });
+        }
+    } catch (error) {
+        console.error("Error al cargar entrevistas:", error);
+        loadingEl.style.display = 'none';
+        errorEl.style.display = 'block';
+    }
 }
 
 function setupMuroEsperanzaPage() {
-    const hopeMessageForm = document.getElementById('hopeMessageForm');
-    const hopeWallGrid = document.querySelector('.hope-wall-grid');
+    const form = document.getElementById('hopeMessageForm');
+    const grid = document.querySelector('.hope-wall-grid');
+    if (!form || !grid || !dbInstance) return;
 
-    if (hopeMessageForm) {
-        const charCounter = document.getElementById('charCounter');
-        const messageText = document.getElementById('mensajeTexto');
-        const formStatusMessage = document.getElementById('formStatusMessage');
+    const textEl = form.querySelector('#mensajeTexto');
+    const counterEl = form.querySelector('#charCounter');
+    textEl.addEventListener('input', () => {
+        counterEl.textContent = `${textEl.value.length}/300`;
+    });
 
-        messageText.addEventListener('input', () => {
-            charCounter.textContent = `${messageText.value.length}/300`;
-        });
-        
-        hopeMessageForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const submitButton = hopeMessageForm.querySelector('button[type="submit"]');
-            submitButton.classList.add('loading');
-            submitButton.disabled = true;
-            formStatusMessage.textContent = "Enviando tu mensaje...";
-            formStatusMessage.className = 'form-status-message';
-            formStatusMessage.style.display = 'block';
-
-            const autor = hopeMessageForm.nombreAutor.value.trim() || "Anónimo";
-            const texto = hopeMessageForm.mensajeTexto.value.trim();
-
-            if (!texto) {
-                formStatusMessage.textContent = "Por favor, escribe un mensaje.";
-                formStatusMessage.className = 'form-status-message error';
-                submitButton.classList.remove('loading');
-                submitButton.disabled = false;
-                return;
-            }
-
-            dbInstance.collection('mensajesEsperanza').add({
-                autor,
-                texto,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+    form.addEventListener('submit', async e => {
+        e.preventDefault();
+        const btn = e.target.querySelector('button[type="submit"]');
+        const statusEl = document.getElementById('formStatusMessage');
+        btn.classList.add('loading');
+        btn.disabled = true;
+        statusEl.className = 'form-status-message';
+        statusEl.style.display = 'block';
+        statusEl.textContent = 'Enviando...';
+        try {
+            await dbInstance.collection('mensajesEsperanza').add({
+                autor: e.target.nombreAutor.value.trim() || "Anónimo",
+                texto: textEl.value.trim(),
                 aprobado: false,
-                destacado: false
-            }).then(() => {
-                formStatusMessage.textContent = "¡Gracias! Tu mensaje ha sido enviado para su revisión.";
-                formStatusMessage.className = 'form-status-message success';
-                hopeMessageForm.reset();
-                charCounter.textContent = '0/300';
-            }).catch((error) => {
-                console.error("Error al enviar el mensaje: ", error);
-                formStatusMessage.textContent = "Hubo un error al enviar tu mensaje. Por favor, inténtalo de nuevo.";
-                formStatusMessage.className = 'form-status-message error';
-            }).finally(() => {
-                setTimeout(() => {
-                     submitButton.classList.remove('loading');
-                     submitButton.disabled = false;
-                }, 1500);
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
             });
-        });
-    }
+            statusEl.textContent = '¡Gracias! Tu mensaje ha sido enviado para revisión.';
+            statusEl.classList.add('success');
+            e.target.reset();
+            counterEl.textContent = '0/300';
+        } catch (error) {
+            console.error("Error al enviar mensaje:", error);
+            statusEl.textContent = 'Error al enviar. Inténtalo de nuevo.';
+            statusEl.classList.add('error');
+        } finally {
+            setTimeout(() => {
+                btn.classList.remove('loading');
+                btn.disabled = false;
+            }, 1500);
+        }
+    });
 
-    if (hopeWallGrid) {
-        const loadingMsg = hopeWallGrid.querySelector('.loading-messages');
-        loadingMsg.style.display = 'block';
-        dbInstance.collection('mensajesEsperanza').where('aprobado', '==', true).orderBy('timestamp', 'desc').limit(25).onSnapshot((snapshot) => {
-            loadingMsg.style.display = 'none';
-            hopeWallGrid.querySelectorAll('.hope-message-card').forEach(el => el.remove());
-            if (snapshot.empty) {
-                hopeWallGrid.querySelector('.no-messages:not(.error)').style.display = 'block';
-                return;
-            }
-            hopeWallGrid.querySelector('.no-messages:not(.error)').style.display = 'none';
+    const loadingEl = grid.querySelector('.loading-messages');
+    const noMessagesEl = grid.querySelector('.no-messages:not(.error)');
+    const errorEl = grid.querySelector('.no-messages.error');
+    loadingEl.style.display = 'block';
+    noMessagesEl.style.display = 'none';
+    errorEl.style.display = 'none';
+
+    dbInstance.collection('mensajesEsperanza').where('aprobado', '==', true).orderBy('timestamp', 'desc').onSnapshot(snapshot => {
+        loadingEl.style.display = 'none';
+        grid.querySelectorAll('.hope-message-card').forEach(el => el.remove());
+        if (snapshot.empty) {
+            noMessagesEl.style.display = 'block';
+        } else {
             snapshot.forEach(doc => {
                 const data = doc.data();
-                const messageCard = document.createElement('article');
-                messageCard.classList.add('hope-message-card');
-                messageCard.innerHTML = `<p class="message-text">${escapeHTML(data.texto).replace(/\n/g, '<br>')}</p><p class="message-author">- <span class="author-icon">💌</span> ${escapeHTML(data.autor)}</p>`;
-                hopeWallGrid.appendChild(messageCard);
+                const card = document.createElement('article');
+                card.className = 'hope-message-card';
+                card.innerHTML = `
+                    <p class="message-text">${escapeHTML(data.texto).replace(/\n/g, '<br>')}</p>
+                    <p class="message-author">- <span class="author-icon">💌</span> ${escapeHTML(data.autor)}</p>`;
+                grid.appendChild(card);
             });
-        }, (error) => {
-            console.error("Error al cargar mensajes: ", error);
-            loadingMsg.style.display = 'none';
-            hopeWallGrid.querySelector('.no-messages.error').style.display = 'block';
-        });
-    }
+        }
+    }, error => {
+        console.error("Error al cargar mensajes. Revisa reglas e índices de Firestore.", error);
+        loadingEl.style.display = 'none';
+        errorEl.style.display = 'block';
+    });
 }
 
-// ========================================================= //
-// ========= FUNCIÓN CORREGIDA PARA HISTORIA DESTACADA ===== //
-// ========================================================= //
 async function setupFeaturedStory() {
-    const quoteTextElement = document.getElementById('featured-quote-text');
-    const quoteAuthorElement = document.getElementById('featured-quote-author');
-    if (!quoteTextElement || !quoteAuthorElement) return;
+    const quoteTextEl = document.getElementById('featured-quote-text');
+    const quoteAuthorEl = document.getElementById('featured-quote-author');
+    if (!quoteTextEl || !quoteAuthorEl || !dbInstance) return;
 
     try {
-        // Nueva lógica: Traer los 10 más recientes de cada colección
-        const storyQuery = dbInstance.collection('historiasEnviadas')
-            .where('aprobado', '==', true)
-            .orderBy('timestamp', 'desc')
-            .limit(10);
-            
-        const messageQuery = dbInstance.collection('mensajesEsperanza')
-            .where('aprobado', '==', true)
-            .orderBy('timestamp', 'desc')
-            .limit(10);
-        
-        const [storySnapshot, messageSnapshot] = await Promise.all([storyQuery.get(), messageQuery.get()]);
-        
+        const [storySnapshot, messageSnapshot] = await Promise.all([
+            dbInstance.collection('historiasEnviadas').where('aprobado', '==', true).orderBy('timestamp', 'desc').limit(10).get(),
+            dbInstance.collection('mensajesEsperanza').where('aprobado', '==', true).orderBy('timestamp', 'desc').limit(10).get()
+        ]);
         const items = [];
-        // Añadimos los datos de las historias al array
         storySnapshot.forEach(doc => items.push(doc.data()));
-        // Añadimos los datos de los mensajes al array
         messageSnapshot.forEach(doc => items.push(doc.data()));
-
         if (items.length > 0) {
-            // Escogemos un elemento al azar de la "bolsa" combinada
             const randomItem = items[Math.floor(Math.random() * items.length)];
-            
-            // Determinamos si es historia (tiene 'contenido') o mensaje (tiene 'texto')
-            const text = randomItem.contenido 
-                ? (randomItem.contenido.length > 200 ? randomItem.contenido.substring(0, 200) + '...' : randomItem.contenido) 
-                : randomItem.texto;
-                
-            quoteTextElement.textContent = `“${escapeHTML(text)}”`;
-            quoteAuthorElement.textContent = `– ${escapeHTML(randomItem.autor)}`;
-        } else {
-            console.log("No hay historias ni mensajes aprobados para mostrar en la sección destacada.");
-            // Si no hay nada, el texto por defecto del HTML se quedará, lo cual está bien.
+            const text = randomItem.contenido ?
+                (randomItem.contenido.length > 200 ? randomItem.contenido.substring(0, 200) + '...' : randomItem.contenido) :
+                randomItem.texto;
+            quoteTextEl.textContent = `“${escapeHTML(text)}”`;
+            quoteAuthorEl.textContent = `– ${escapeHTML(randomItem.autor)}`;
         }
     } catch (error) {
-        console.error("Error al cargar contenido destacado: ", error);
-        quoteTextElement.textContent = "No se pudo cargar el contenido de la comunidad en este momento.";
-        quoteAuthorElement.textContent = "– Fórmula Triple Rosa";
+        console.error("Error al cargar contenido destacado:", error);
     }
 }
 
 function setupAffirmationGenerator() {
     const affirmationElement = document.getElementById('affirmationText');
     if (!affirmationElement) return;
-
     const affirmations = [
         "Soy fuerte, soy resiliente y cada día estoy más cerca de mi bienestar.",
         "Mi cuerpo es sabio y tiene una increíble capacidad para sanar.",
@@ -510,7 +457,49 @@ function setupAffirmationGenerator() {
         "Elijo enfocarme en la gratitud por las pequeñas alegrías de hoy.",
         "Tengo el poder de crear momentos de paz en medio de la tormenta."
     ];
+    affirmationElement.textContent = `“${affirmations[Math.floor(Math.random() * affirmations.length)]}”`;
+}
 
-    const randomIndex = Math.floor(Math.random() * affirmations.length);
-    affirmationElement.textContent = `“${affirmations[randomIndex]}”`;
+// ===================================================================
+// ===== FUNCIONES UTILITARIAS (DEPURADAS Y CORRECTAS) ==============
+// ===================================================================
+
+/**
+ * Escapa caracteres HTML de forma segura para prevenir inyección de XSS.
+ * @param {string | null | undefined} str La cadena de texto a escapar.
+ * @returns {string} La cadena de texto escapada.
+ */
+function escapeHTML(str) {
+    if (str === null || typeof str === 'undefined') {
+        return '';
+    }
+    return String(str).replace(/[&<>"']/g, function(match) {
+        switch (match) {
+            case '&':
+                return '&';
+            case '<':
+                return '<';
+            case '>':
+                return '>';
+            case '"':
+                return '"';
+            case "'":
+                return ''
+            default:
+                return match;
+        }
+    });
+}
+
+/** Formatea un timestamp de Firebase a un formato legible. */
+function formatDate(timestamp) {
+    if (!timestamp || typeof timestamp.toDate !== 'function') {
+        return "Fecha desconocida";
+    }
+    try {
+        return timestamp.toDate().toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' });
+    } catch (e) {
+        console.error("Error formateando la fecha:", e);
+        return "Fecha inválida";
+    }
 }
