@@ -368,12 +368,53 @@ function setupMuroEsperanzaPage() {
     if (hopeMessageForm) {
         const charCounter = document.getElementById('charCounter');
         const messageText = document.getElementById('mensajeTexto');
+        const formStatusMessage = document.getElementById('formStatusMessage');
+
         messageText.addEventListener('input', () => {
             charCounter.textContent = `${messageText.value.length}/300`;
         });
+        
         hopeMessageForm.addEventListener('submit', (e) => {
-             e.preventDefault();
-            // ... resto del código del formulario ...
+            e.preventDefault();
+            const submitButton = hopeMessageForm.querySelector('button[type="submit"]');
+            submitButton.classList.add('loading');
+            submitButton.disabled = true;
+            formStatusMessage.textContent = "Enviando tu mensaje...";
+            formStatusMessage.className = 'form-status-message';
+            formStatusMessage.style.display = 'block';
+
+            const autor = hopeMessageForm.nombreAutor.value.trim() || "Anónimo";
+            const texto = hopeMessageForm.mensajeTexto.value.trim();
+
+            if (!texto) {
+                formStatusMessage.textContent = "Por favor, escribe un mensaje.";
+                formStatusMessage.className = 'form-status-message error';
+                submitButton.classList.remove('loading');
+                submitButton.disabled = false;
+                return;
+            }
+
+            dbInstance.collection('mensajesEsperanza').add({
+                autor,
+                texto,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                aprobado: false,
+                destacado: false
+            }).then(() => {
+                formStatusMessage.textContent = "¡Gracias! Tu mensaje ha sido enviado para su revisión.";
+                formStatusMessage.className = 'form-status-message success';
+                hopeMessageForm.reset();
+                charCounter.textContent = '0/300';
+            }).catch((error) => {
+                console.error("Error al enviar el mensaje: ", error);
+                formStatusMessage.textContent = "Hubo un error al enviar tu mensaje. Por favor, inténtalo de nuevo.";
+                formStatusMessage.className = 'form-status-message error';
+            }).finally(() => {
+                setTimeout(() => {
+                     submitButton.classList.remove('loading');
+                     submitButton.disabled = false;
+                }, 1500);
+            });
         });
     }
 
@@ -387,6 +428,7 @@ function setupMuroEsperanzaPage() {
                 hopeWallGrid.querySelector('.no-messages:not(.error)').style.display = 'block';
                 return;
             }
+            hopeWallGrid.querySelector('.no-messages:not(.error)').style.display = 'none';
             snapshot.forEach(doc => {
                 const data = doc.data();
                 const messageCard = document.createElement('article');
@@ -402,31 +444,53 @@ function setupMuroEsperanzaPage() {
     }
 }
 
+// ========================================================= //
+// ========= FUNCIÓN CORREGIDA PARA HISTORIA DESTACADA ===== //
+// ========================================================= //
 async function setupFeaturedStory() {
     const quoteTextElement = document.getElementById('featured-quote-text');
     const quoteAuthorElement = document.getElementById('featured-quote-author');
     if (!quoteTextElement || !quoteAuthorElement) return;
 
     try {
-        const storyQuery = dbInstance.collection('historiasEnviadas').where('destacado', '==', true).where('aprobado', '==', true).limit(1);
-        const messageQuery = dbInstance.collection('mensajesEsperanza').where('destacado', '==', true).where('aprobado', '==', true).limit(1);
+        // Nueva lógica: Traer los 10 más recientes de cada colección
+        const storyQuery = dbInstance.collection('historiasEnviadas')
+            .where('aprobado', '==', true)
+            .orderBy('timestamp', 'desc')
+            .limit(10);
+            
+        const messageQuery = dbInstance.collection('mensajesEsperanza')
+            .where('aprobado', '==', true)
+            .orderBy('timestamp', 'desc')
+            .limit(10);
         
         const [storySnapshot, messageSnapshot] = await Promise.all([storyQuery.get(), messageQuery.get()]);
         
         const items = [];
-        if (!storySnapshot.empty) items.push(storySnapshot.docs[0].data());
-        if (!messageSnapshot.empty) items.push(messageSnapshot.docs[0].data());
+        // Añadimos los datos de las historias al array
+        storySnapshot.forEach(doc => items.push(doc.data()));
+        // Añadimos los datos de los mensajes al array
+        messageSnapshot.forEach(doc => items.push(doc.data()));
 
         if (items.length > 0) {
+            // Escogemos un elemento al azar de la "bolsa" combinada
             const randomItem = items[Math.floor(Math.random() * items.length)];
-            const text = randomItem.contenido ? (randomItem.contenido.length > 200 ? randomItem.contenido.substring(0, 200) + '...' : randomItem.contenido) : randomItem.texto;
+            
+            // Determinamos si es historia (tiene 'contenido') o mensaje (tiene 'texto')
+            const text = randomItem.contenido 
+                ? (randomItem.contenido.length > 200 ? randomItem.contenido.substring(0, 200) + '...' : randomItem.contenido) 
+                : randomItem.texto;
+                
             quoteTextElement.textContent = `“${escapeHTML(text)}”`;
             quoteAuthorElement.textContent = `– ${escapeHTML(randomItem.autor)}`;
         } else {
-            console.log("No hay contenido destacado para mostrar.");
+            console.log("No hay historias ni mensajes aprobados para mostrar en la sección destacada.");
+            // Si no hay nada, el texto por defecto del HTML se quedará, lo cual está bien.
         }
     } catch (error) {
         console.error("Error al cargar contenido destacado: ", error);
+        quoteTextElement.textContent = "No se pudo cargar el contenido de la comunidad en este momento.";
+        quoteAuthorElement.textContent = "– Fórmula Triple Rosa";
     }
 }
 
