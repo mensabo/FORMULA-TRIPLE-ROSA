@@ -167,8 +167,8 @@ h1, h2, h3, h4, h5 { font-family: var(--font-heading); color: var(--pink-primary
     text-align: left;
 }
 .hero-text-content .subtitle .intro-name {
-    font-family: 'Montserrat', sans-serif;
-    font-size: clamp(1.6rem, 2.7vw, 2rem);
+    font-family: inherit; /* ¡Este es el cambio clave! Hereda la fuente 'Caveat' del padre */
+    font-size: clamp(1.8rem, 2.5vw, 2.2rem); /* Hacemos el tamaño un poco más armónico */
     font-weight: 700;
     display: block;
     margin-bottom: 10px;
@@ -459,13 +459,13 @@ a:not(.cta-button):not(.hero-cta-button):active {
     width: 100%;
 }
 .hero-section-internal-banner .hero-text-overlay .container {
-    padding-top: 40px;
+    padding-top: 40px; /* Un poco más de aire */
     padding-bottom: 40px;
-    padding-left: 8%;
+    padding-left: 8%; /* Empujamos más desde la izquierda */
     padding-right: 20px;
     margin: 0;
     width: 100%;
-    max-width: 60%;
+    max-width: 60%; /* Hacemos que el contenedor de texto ocupe solo un 60% del ancho */
     text-align: left;
 }
 .hero-section-internal-banner .hero-text-overlay h1 {
@@ -505,118 +505,13 @@ a:not(.cta-button):not(.hero-cta-button):active {
 .hero-section-recursos .recursos-banner-bg { 
     background-image: linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.55)), url('images/banner-hero-recursos.png'); 
 }
+.hero-section-entrevistas .entrevistas-banner-bg { 
+    background-image: linear-gradient(to right, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.2) 60%, rgba(0,0,0,0) 100%), url('images/banner-hero-entrevistas.png');
+    background-position: center right; /* ¡CLAVE! Mueve la imagen a la derecha */
+}
 .hero-section-calma .calma-banner-bg {
     background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url('images/zen.png');
 }
-
-/* ======================================================================== */
-/* ===== SOLUCIÓN DEFINITIVA BANNER DE ENTREVISTAS (Desktop & Mobile) ===== */
-/* ======================================================================== */
-
-/* Estilos para el banner de la página de Entrevistas */
-.hero-section-entrevistas .entrevistas-banner-bg {
-    /* --- VISTA DE ESCRITORIO (POR DEFECTO) --- */
-    
-    /* 1. Flexbox para alinear el bloque de texto a la izquierda */
-    display: flex;
-    align-items: center;       /* Centrado verticalmente */
-    justify-content: flex-start; /* Alineado a la izquierda */
-    min-height: 400px;
-    
-    /* 2. Color de fondo oscuro como base */
-    background-color: #2c0a25;
-
-    /* 3. IMAGEN DE FONDO que estará debajo del degradado */
-    background-image: url('images/banner-hero-entrevistas.png');
-    
-    /* 4. Posicionamiento y tamaño de la imagen */
-    background-position: right center; /* Anclamos la imagen a la derecha */
-    background-size: auto 100%;      /* Altura 100%, ancho automático (sin recorte) */
-    background-repeat: no-repeat;
-    
-    position: relative; /* Necesario para el pseudo-elemento que creará el degradado */
-}
-
-.hero-section-entrevistas .entrevistas-banner-bg::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    /* 5. ¡LA CLAVE! El degradado que se funde suavemente sobre la imagen */
-    background: linear-gradient(to left,
-        rgba(44, 10, 37, 0) 40%,    /* Derecha (sobre el texto): transparente */
-        rgba(44, 10, 37, 1) 70%     /* Hacia la izquierda: se vuelve opaco, fusionándose con el fondo */
-    );
-    z-index: 1; /* Se asegura que el degradado esté sobre la imagen pero debajo del texto */
-}
-
-
-/* --- Estilos para el bloque de texto --- */
-/* Aumentamos especificidad para ganar a la regla genérica .hero-section-internal-banner */
-header.hero-section-entrevistas .hero-text-overlay {
-    background: none; 
-    position: relative; /* Asegura que el texto esté sobre el degradado */
-    z-index: 2;
-}
-
-header.hero-section-entrevistas .hero-text-overlay .container {
-    text-align: left; /* Alineamos el texto a la izquierda */
-    max-width: 50%;    /* Limitamos su ancho */
-    padding: 20px 20px 20px 5%; /* Ajustamos el padding */
-    margin-left: 0;
-    margin-right: auto;
-    width: auto;
-}
-
-/* Nos aseguramos de que el texto dentro del contenedor también se alinee a la izquierda */
-.hero-section-entrevistas .hero-text-overlay h1,
-.hero-section-entrevistas .hero-text-overlay .page-subtitle {
-    text-align: left;
-    max-width: 100%;
-    text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
-}
-
-
-/* --- VISTA MÓVIL (PANTALLAS DE HASTA 768px) --- */
-@media (max-width: 768px) {
-    .hero-section-entrevistas .entrevistas-banner-bg {
-        /* Movemos el texto a la parte inferior para no tapar la cara */
-        align-items: flex-end;
-        justify-content: flex-end;
-        
-        /* Ajustamos la posición de la imagen para centrar mejor la cara en vertical */
-        background-position: center 30%;
-        background-size: cover; /* En móvil, 'cover' es más apropiado */
-        
-        /* En móvil, solo usamos la imagen. El degradado va en el overlay */
-        background-image: url('images/banner-hero-entrevistas.png');
-    }
-    
-    /* Ocultamos el degradado de fusión del escritorio */
-    .hero-section-entrevistas .entrevistas-banner-bg::before {
-       background: none;
-    }
-
-    header.hero-section-entrevistas .hero-text-overlay {
-        /* Añadimos un degradado solo en la parte inferior para asegurar legibilidad */
-        width: 100%;
-        background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 100%);
-    }
-    
-    header.hero-section-entrevistas .hero-text-overlay .container {
-        max-width: 100%; /* El contenedor ocupa todo el ancho */
-        padding: 40px 20px 30px 20px; /* Damos buen espacio inferior */
-    }
-    
-    /* Forzamos la alineación a la derecha para ganar la batalla a los estilos generales */
-    .hero-section-entrevistas .hero-text-overlay h1,
-    .hero-section-entrevistas .hero-text-overlay .page-subtitle {
-        text-align: right !important;
-    }
-}
-
 
 .personal-message-section {
     padding: 100px 0;
@@ -1775,58 +1670,55 @@ header.hero-section-entrevistas .hero-text-overlay .container {
 }
 
 /* ====== 4. ENTREVISTAS: "EL FOCO DEL EXPERTO" ====== */
-/* ======================================================================== */
-/* ===== REDISEÑO TARJETA INTRO "ENTREVISTAS" =========================== */
-/* ======================================================================== */
-
 .intro-card--entrevistas {
-    display: block; /* Eliminamos el layout de rejilla */
-    text-align: center; /* Centramos todo el contenido */
-    padding: 60px 30px;
-    background-color: var(--bg-light);
-    /* Usamos una textura sutil que ya existe en el sitio para dar coherencia */
-    background-image: var(--textura-cabecera-interna);
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 30px;
+    align-items: center;
+    background-color: #ffffff;
+    border: 1px solid #eee;
+    padding: 40px;
     border-radius: var(--border-radius);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.04);
     max-width: 900px;
-    margin: 0 auto 60px auto; /* La centramos y le damos espacio inferior */
-    border: none;
-    box-shadow: 0 10px 40px rgba(var(--pink-secondary-rgb), 0.5);
 }
-
-.intro-card--entrevistas .intro-card-icon-container {
-    width: 100px; /* Hacemos el icono más grande y protagonista */
-    height: 100px;
-    margin: 0 auto 30px auto; /* Lo centramos y le damos espacio */
-    background: linear-gradient(135deg, #fff, #fdeff4);
-    box-shadow: 0 5px 15px rgba(var(--pink-primary-rgb), 0.1);
+.intro-card-icon-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--bg-light), #fdeff4);
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
 }
-
-.intro-card--entrevistas .intro-card-icon-container svg {
-    width: 50px;
-    height: 50px;
+.intro-card-icon-container svg {
+    width: 40px;
+    height: 40px;
+    stroke: var(--pink-highlight);
+    fill: rgba(var(--pink-highlight-rgb), 0.1);
+    transition: transform 0.3s ease;
 }
-
-.intro-card--entrevistas .intro-card-text-container {
-    text-align: center; /* Redundante, pero asegura el centrado */
+.intro-card--entrevistas:hover .intro-card-icon-container svg {
+    transform: scale(1.1);
 }
-
+.intro-card-text-container {
+    text-align: left;
+}
 .intro-card--entrevistas .intro-card-headline {
-    font-family: var(--font-elegant); /* Usamos la fuente elegante */
-    font-size: clamp(2rem, 5vw, 2.8rem);
-    margin-bottom: 20px;
+    font-size: 1.8rem;
+    margin-bottom: 15px;
 }
-
 .intro-card--entrevistas .intro-card-body {
-    border: none; /* Eliminamos el borde izquierdo que ya no tiene sentido */
-    padding: 0;
-    max-width: 650px; /* Mejoramos la legibilidad limitando el ancho de línea */
-    margin: 0 auto;
-    color: #666; /* Un gris más suave para el texto */
-}
-
-.intro-card--entrevistas .intro-card-body p {
-    font-size: 1.1rem;
+    font-family: var(--font-elegant);
+    font-size: 1.2rem;
     line-height: 1.8;
+    color: #555;
+    border-left: 3px solid var(--pink-highlight);
+    padding-left: 20px;
+    margin: 0;
+}
+.intro-card--entrevistas .intro-card-body p {
+    margin-bottom: 0;
 }
 
 /* --- AJUSTE PARA UNIFICAR HOVER DEL FOOTER --- */
@@ -2252,6 +2144,53 @@ textarea:focus-visible {
     background-position: center;
 }
 
+/* ========================================================= */
+/* == REDISEÑO DE LA CARTA PERSONAL EN 'PROYECTO.HTML' ===== */
+/* ========================================================= */
+
+/* Estilo para el nuevo título con fuente manuscrita */
+.section-title-script {
+    font-family: var(--font-script);
+    font-size: clamp(3rem, 7vw, 4.5rem);
+    line-height: 1.2;
+    color: var(--pink-primary);
+    text-align: left;
+    margin-bottom: 25px;
+    transform: rotate(-1.5deg); /* Le da un toque manual */
+    padding-bottom: 0;
+}
+.section-title-script::after {
+    display: none; /* Quitamos la línea de abajo que tienen los otros h2 */
+}
+
+/* Estilo para los párrafos de la historia */
+.story-text-content p {
+    font-family: var(--font-elegant); /* La fuente elegante para contar historias */
+    font-size: 1.15rem;
+    line-height: 1.9; /* Más espacio para respirar */
+    color: #444; /* Un negro más suave */
+    margin-bottom: 1.5em;
+}
+
+/* Estilo para el separador decorativo */
+.story-divider {
+    border: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--pink-secondary), transparent);
+    margin: 40px auto;
+    width: 80%;
+}
+
+/* Estilo mejorado para la firma */
+.story-text-content .signature {
+    font-family: var(--font-script);
+    font-size: 2.2rem;
+    color: var(--pink-primary);
+    text-align: right; /* Alineada a la derecha, como una carta */
+    margin-top: 20px;
+    margin-bottom: 0;
+}
+
 /* --- Media Queries --- */
 @media (max-width: 992px) {
     .main-nav .nav-links { gap: 15px; } 
@@ -2465,6 +2404,8 @@ textarea:focus-visible {
     .story-image-content { order: -1; margin-bottom: 30px; }
     .project-photo-collage { max-width: 320px; height: 320px; }
     .section-title-left-aligned { text-align: center; }
+    .section-title-script { text-align: center; }
+
 
     .timeline::after { left: 20px; }
     .timeline-item { width: 100%; padding-left: 60px; padding-right: 15px; }
@@ -2571,51 +2512,41 @@ textarea:focus-visible {
         grid-template-columns: 1fr;
     }
 }
-/* =================================================================== */
-/* == AJUSTE TÍTULO APILADO EN MÓVIL (ENTREVISTAS) ==================== */
-/* =================================================================== */
 
-/* Por defecto (en escritorio), el prefijo del título es normal */
-.title-prefix {
-    display: inline; /* Se mantiene en la misma línea */
-    margin-right: 0.5em; /* Añade un pequeño espacio a la derecha */
-}
-
-/* SOLO en vista móvil (hasta 768px) */
+/* =================================================================== */
+/* == REDISEÑO DEL BANNER DE ENTREVISTAS EN MÓVIL (SOLUCIÓN FINAL) ==== */
+/* =================================================================== */
 @media (max-width: 768px) {
-    .hero-section-entrevistas .hero-text-overlay h1 {
-        line-height: 1.15; /* Juntamos un poco las líneas del título */
-        margin-bottom: 10px; /* Ajustamos el espacio inferior */
+
+    /* 1. Hacemos que el contenedor del banner apile sus elementos verticalmente */
+    .hero-section-entrevistas .entrevistas-banner-bg {
+        position: relative; /* Contexto para el posicionamiento absoluto */
+        display: block; /* Reseteamos el flexbox que no funcionó */
+        min-height: 420px; /* Altura total para imagen + texto */
+        background-position: center 25%; /* Centramos la foto en tu rostro */
+        background-image: url('images/banner-hero-entrevistas.png'); /* Aseguramos que la imagen esté presente */
     }
 
-    .title-prefix {
-        display: block; /* ¡La magia! Lo convierte en un bloque y lo pone arriba */
-        font-size: 1.4rem; /* Hacemos que "Entrevistas con" sea más pequeño */
-        font-weight: 500;
-        color: rgba(255, 255, 255, 0.85); /* Un blanco un poco más sutil */
-        margin-bottom: -5px; /* Acercamos "Yaiza Díaz" un poco hacia arriba */
-        margin-right: 0;
+    /* 2. El bloque de texto: lo sacamos del flujo y lo pegamos abajo */
+    .hero-section-entrevistas .hero-text-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background: var(--bg-light); /* Fondo claro para legibilidad */
+        padding-top: 25px;
+        padding-bottom: 25px;
     }
-}
-/* =================================================================== */
-/* == MEJORA ESTÉTICA SUBTÍTULO (ENTREVISTAS) ========================== */
-/* =================================================================== */
 
-.hero-section-entrevistas .page-subtitle {
-    font-family: var(--font-elegant); /* Usamos la fuente elegante del sitio */
-    font-style: italic;               /* La ponemos en cursiva para un toque sofisticado */
-    font-size: 1.25rem;              /* Un poco más grande para que tenga más presencia */
-    line-height: 1.6;                /* Mejoramos el espacio entre líneas */
-    opacity: 0.9;                    /* Un blanco ligeramente más suave para no competir con el título */
-    max-width: 480px;                /* Limitamos su ancho para que forme un bloque de texto agradable */
-    margin-left: auto;               /* Esto, junto al text-align, lo mantiene a la derecha */
-    margin-right: 0;
-}
+    /* 3. El texto dentro del bloque: restauramos sus colores para el fondo claro */
+    .hero-section-entrevistas .hero-text-overlay h1,
+    .hero-section-entrevistas .hero-text-overlay h1 .highlight {
+        color: var(--pink-primary);
+        text-shadow: none; /* Ya no necesita sombra */
+    }
 
-/* Pequeño ajuste para móviles, para que el tamaño no sea excesivo */
-@media (max-width: 768px) {
-    .hero-section-entrevistas .page-subtitle {
-        font-size: 1.15rem; /* Reducimos un poco el tamaño en pantallas pequeñas */
-        max-width: 100%;    /* Permitimos que ocupe todo el ancho disponible */
+    .hero-section-entrevistas .hero-text-overlay .page-subtitle {
+        color: var(--text-dark);
+        text-shadow: none;
     }
 }
