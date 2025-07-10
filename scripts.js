@@ -148,7 +148,7 @@ async function initializeFirebaseAndAppCheck() {
         const app = firebase.initializeApp(firebaseConfig);
         
         // MODO DEBUG PARA DESARROLLO LOCAL
-        window.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+        window.FIREBASE_APPCHECK_DEBUG_TOKEN = false;
 
         if (firebase.appCheck) {
             const appCheck = firebase.appCheck(app);
