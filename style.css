@@ -2746,4 +2746,53 @@ textarea:focus-visible {
     bottom: 4px !important;        /* La sube un poco desde abajo */
     box-shadow: none !important;     /* Le quita la sombra por si acaso */
     transition: none !important;     /* Evita transiciones que puedan ocultarla */
+}/* Estilos para el contador de visitas */
+#visitor-counter {
+    display: flex; /* Para alinear el corazón y el número horizontalmente */
+    align-items: center; /* Centrar verticalmente */
+    justify-content: center; /* Centrar horizontalmente */
+    margin-top: 20px;
+    font-size: 1.1rem;
+    color: var(--text-light); /* Color del texto para el footer */
+    gap: 8px; /* Espacio entre el corazón y el número */
+    background-color: rgba(255, 255, 255, 0.1); /* Fondo semitransparente para que se vea */
+    padding: 8px 15px;
+    border-radius: 20px;
+    max-width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    backdrop-filter: blur(5px); /* Efecto de desenfoque, opcional */
+    -webkit-backdrop-filter: blur(5px); /* Compatibilidad con Safari */
+    border: 1px solid rgba(255, 255, 255, 0.2); /* Borde sutil, opcional */
+}
+
+#visitor-counter .heart-icon {
+    font-size: 1.5rem; /* Tamaño del corazón */
+    line-height: 1; /* Asegura que el corazón no agregue espacio extra */
+    color: var(--pink-highlight); /* Color rosa para el corazón, usando tu variable */
+    animation: pulse 1.5s infinite; /* Pequeña animación para que palpite */
+}
+
+/* Animación para el corazón (opcional, pero bonito) */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+#visit-count-display {
+    font-weight: bold;
+    color: var(--text-light); /* Asegura que el número también sea visible */
+    text-shadow: 0 0 5px rgba(0,0,0,0.2); /* Sombra de texto sutil para mejor legibilidad */
+}
+
+/* Ajustes para pantallas pequeñas si es necesario */
+@media (max-width: 768px) {
+    #visitor-counter {
+        font-size: 1rem;
+        padding: 6px 12px;
+    }
+    #visitor-counter .heart-icon {
+        font-size: 1.3rem;
+    }
 }
