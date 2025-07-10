@@ -40,6 +40,8 @@
     --viaje-bg-2: url('images/viaje-fondo-2.png');
     --viaje-bg-3: url('images/viaje-fondo-3.png');
 
+    --fondo-mensaje-yaiza: url('images/textura-rosada.jpg');
+    --textura-cabecera-interna: url('images/textura-fondo-claro.png');
     
     /* Variable para la nueva imagen del footer con extensión .png */
     --final-section-bg: url('images/footer-background-yaiza.png'); 
@@ -744,6 +746,89 @@ header.hero-section-entrevistas .hero-text-overlay .container {
     font-size: 0.95rem; line-height: 1.6; margin-bottom: 0; color: inherit; max-width: 90%; font-weight: 400; 
     text-shadow: 1px 1px 1px rgba(0,0,0,0.5), 0 0 3px rgba(0,0,0,0.2);
 } 
+
+/* ======================================================================== */
+/* ===== REDISEÑO SECCIÓN "DE NUESTRA COMUNIDAD" (CITA DESTACADA) ====== */
+/* ======================================================================== */
+
+.featured-story-section {
+    padding: 80px 0;
+    background-color: #fffafc; /* Un blanco rosado muy, muy sutil */
+    position: relative;
+    overflow: hidden;
+}
+
+/* Decoración sutil de fondo */
+.featured-story-section::before {
+    content: '';
+    position: absolute;
+    top: -50px;
+    left: -50px;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(var(--pink-secondary-rgb), 0.3) 0%, transparent 70%);
+    filter: blur(30px);
+    opacity: 0.5;
+}
+
+.featured-story-section h2 {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+/* El contenedor principal de la cita */
+.featured-quote {
+    position: relative;
+    background-color: #ffffff;
+    border-radius: var(--border-radius);
+    padding: 40px 50px;
+    max-width: 700px;
+    margin: 0 auto 40px auto;
+    text-align: center;
+    box-shadow: 0 10px 45px rgba(var(--pink-primary-rgb), 0.1);
+    border-top: 4px solid var(--pink-highlight);
+    z-index: 2;
+}
+
+/* La comilla gigante decorativa de fondo */
+.featured-quote::before {
+    content: '“';
+    position: absolute;
+    top: 15px;
+    left: 20px;
+    font-family: var(--font-elegant); /* Usamos la fuente serif elegante */
+    font-size: 8rem;
+    line-height: 1;
+    color: rgba(var(--pink-secondary-rgb), 0.4);
+    z-index: -1;
+}
+
+/* El texto de la cita */
+#featured-quote-text {
+    font-family: var(--font-script); /* La fuente manuscrita que ya usas */
+    font-size: clamp(1.8rem, 4vw, 2.5rem); /* Grande, legible y responsive */
+    line-height: 1.5;
+    color: var(--text-dark);
+    margin-bottom: 25px;
+}
+
+/* El autor de la cita */
+#featured-quote-author {
+    display: block;
+    font-family: var(--font-heading);
+    font-style: normal; /* Quitamos la cursiva por defecto de <cite> */
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--pink-primary);
+    text-align: right;
+    margin-top: 20px;
+}
+
+/* Añadimos un guion elegante antes del autor */
+#featured-quote-author::before {
+    content: '— ';
+    margin-right: 2px;
+}
 
 .videos-section { padding: 80px 0; background-color: var(--bg-light); background-image: var(--dots-texture-videos); background-size: 10px 10px; position: relative; }
 .videos-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
@@ -1846,25 +1931,6 @@ header.hero-section-entrevistas .hero-text-overlay .container {
 .section-title-center-aligned { text-align: center; }
 .section-title-left-aligned::after, .section-title-center-aligned::after { display: none; }
 
-/* --- SECCIÓN NUEVA: TÍTULO MANUSCRITO --- */
-.section-title-script {
-    font-family: var(--font-script); /* ¡Usamos la fuente manuscrita! */
-    font-size: clamp(3rem, 8vw, 6rem); /* ¡Mucho más grande e impactante! */
-    line-height: 1.1;
-    font-weight: 700;
-    color: var(--pink-primary);
-    text-align: left; /* Lo alineamos a la izquierda con el texto */
-    margin-bottom: 30px; /* Ajustamos el espaciado */
-    padding-bottom: 0; /* Quitamos el padding que tenía el h2 original */
-    transform: rotate(-2deg); /* Un toque orgánico, como si estuviera escrito a mano */
-    text-shadow: 2px 2px 5px rgba(0,0,0,0.05); /* Sombra muy sutil para darle profundidad */
-}
-.section-title-script::after {
-    display: none; /* Quitamos la línea inferior de los h2 normales */
-}
-/* --- FIN SECCIÓN NUEVA --- */
-
-
 /* --- Sección Historia Personal --- */
 .project-story-section {
     background-color: #ffffff;
@@ -1894,16 +1960,6 @@ header.hero-section-entrevistas .hero-text-overlay .container {
     justify-content: center;
     min-height: 400px;
 }
-
-/* --- NUEVO SEPARADOR DECORATIVO --- */
-.story-divider {
-    border: 0;
-    height: 1px;
-    background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(var(--pink-primary-rgb), 0.5), rgba(0, 0, 0, 0));
-    margin: 30px 0;
-}
-/* --- FIN NUEVO SEPARADOR --- */
-
 
 /* --- ESTILOS COLLAGE DE FOTOS (NUEVO REDISEÑO MEJORADO) --- */
 .project-photo-collage {
@@ -2641,128 +2697,53 @@ textarea:focus-visible {
         max-width: 100%;    /* Permitimos que ocupe todo el ancho disponible */
     }
 }
+
 /* ======================================================================== */
-/* ===== ESTILOS PARA EL CONTADOR DE VISITAS (VERSIÓN CORREGIDA) ====== */
+/* ===== ESTILOS PARA EL CONTADOR DE VISITAS (CORREGIDO) ============== */
 /* ======================================================================== */
 
-#visitor-counter {
-    position: relative;
-    width: 60px;
-    height: 55px; /* Altura ligeramente menor que el ancho */
-    margin: 20px auto 30px auto; /* Espaciado superior e inferior */
-    cursor: default;
-    transition: transform 0.3s ease;
+.visit-counter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px; /* Espacio entre el corazón y el número */
+    margin-top: 30px; /* Espacio por encima */
+    margin-bottom: 20px; /* Espacio por debajo */
 }
 
-#visitor-counter:hover {
-    transform: scale(1.1);
+.heart-icon {
+    width: 24px;
+    height: 24px;
+    fill: var(--pink-primary); /* Rellenamos el SVG con el color principal */
+    animation: pulse 1.5s ease-in-out infinite; /* Añadimos una animación de latido */
 }
 
-/* Creamos las dos mitades del corazón con pseudo-elementos ::before y ::after */
-#visitor-counter::before,
-#visitor-counter::after {
-    content: '';
-    position: absolute;
-    left: 30px; /* Anclamos ambas partes al centro */
-    top: 0;
-    width: 30px; /* La mitad del ancho total */
-    height: 50px; /* Un poco menos que la altura total */
-    background-color: var(--pink-primary);
-    border-radius: 30px 30px 0 0; /* La forma de la parte superior del corazón */
-    transform-origin: 0 100%; /* El punto de rotación estará en la base izquierda */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+    100% { transform: scale(1); }
 }
 
-/* Rotamos la mitad izquierda */
-#visitor-counter::before {
-    transform: rotate(-45deg);
-}
-
-/* Rotamos la mitad derecha */
-#visitor-counter::after {
-    left: 0; /* Movemos esta mitad al inicio */
-    transform-origin: 100% 100%; /* El punto de rotación estará en la base derecha */
-    transform: rotate(45deg);
-}
-
-/* Estilos para el número que va dentro del corazón */
-#visit-count-display {
-    position: relative;
-    z-index: 2; /* Para que esté por encima de las formas del corazón */
-    color: white;
+/* El span con el ID 'visitCount' que contiene el número */
+#visitCount {
     font-family: var(--font-heading);
-    font-weight: 700;
-    font-size: 1.1rem; /* Un poco más grande para mejor legibilidad */
-    line-height: 55px; /* Centrado verticalmente a la altura del contenedor */
-    text-align: center;
-    display: block;
-    width: 100%;
-    height: 100%;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
-    /* Pequeño ajuste para centrar mejor el número en el corazón */
-    padding-top: 2px;
-}
-/* ======================================================================== */
-/* ===== SECCIÓN DE CITA DESTACADA (REDISEÑO MANUSCRITO) ============== */
-/* ======================================================================== */
-
-#featured-story {
-    padding: 100px 0;
-    background-color: var(--bg-light);
-    position: relative;
-    overflow: hidden; /* Contiene los elementos decorativos */
-}
-
-/* Elemento decorativo: una comilla gigante y sutil de fondo */
-#featured-story::before {
-    content: '“';
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    font-family: var(--font-elegant);
-    font-size: 250px;
-    line-height: 1;
-    color: rgba(var(--pink-secondary-rgb), 0.3);
-    z-index: 0;
-    user-select: none; /* Evita que se pueda seleccionar */
-    transform: rotate(-10deg);
-}
-
-.featured-quote {
-    position: relative; /* Para que esté por encima del elemento decorativo */
-    z-index: 1;
-    max-width: 700px;
-    margin: 0 auto;
-    background-color: #ffffff;
-    padding: 40px 50px;
-    border-radius: var(--border-radius);
-    box-shadow: 0 10px 40px rgba(var(--pink-primary-rgb), 0.12);
-    border-top: 5px solid var(--pink-primary);
-}
-
-/* El texto principal de la cita, ahora con estilo manuscrito */
-#featured-quote-text {
-    font-family: var(--font-script); /* ¡La fuente manuscrita! */
-    font-size: clamp(2rem, 4vw, 2.6rem); /* Grande para ser legible y personal */
-    line-height: 1.6;
-    color: var(--text-dark);
-    margin-bottom: 30px;
-    font-weight: 700; /* La fuente Caveat se ve genial en negrita */
-}
-
-/* Quitamos las comillas por defecto del navegador */
-#featured-quote-text::before, #featured-quote-text::after {
-    content: none;
-}
-
-/* El autor de la cita, con estilo limpio para contrastar */
-#featured-quote-author {
-    display: block;
-    text-align: right;
-    font-family: var(--font-heading);
-    font-weight: 600;
     font-size: 1.1rem;
-    color: var(--pink-highlight);
-    font-style: normal; /* Aseguramos que no esté en cursiva por defecto */
-    padding-top: 15px;
-    border-top: 1px solid var(--pink-secondary);
+    font-weight: 700;
+    color: var(--text-light); /* Color de texto claro para que contraste con el fondo oscuro del footer */
+    opacity: 0.9;
+}/* ======================================================================== */
+/* == FIX: VISIBILIDAD DE LA INSIGNIA DE reCAPTCHA EN MÓVILES ========== */
+/* ======================================================================== */
+
+/* 
+  Este código mueve la insignia de reCAPTCHA para que no quede oculta 
+  por las barras de navegación de los navegadores móviles, lo que a veces
+  causa que la verificación de App Check falle.
+*/
+.grecaptcha-badge {
+    visibility: visible !important; /* Fuerza a que sea visible */
+    right: 4px !important;         /* La mueve un poco desde la derecha */
+    bottom: 4px !important;        /* La sube un poco desde abajo */
+    box-shadow: none !important;     /* Le quita la sombra por si acaso */
+    transition: none !important;     /* Evita transiciones que puedan ocultarla */
 }
