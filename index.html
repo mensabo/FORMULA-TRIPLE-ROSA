@@ -108,9 +108,9 @@
                 <div class="container">
                     <h2>De nuestra <span class="highlight">comunidad</span></h2>
                     <blockquote class="featured-quote">
-                        <p id="featured-quote-text">"Aquí puedes poner el extracto de una historia real o un mensaje del muro de la esperanza. Esto cambiaría periódicamente para mantener la web viva y mostrar la fuerza de la comunidad."</p>
-                        <cite id="featured-quote-author">– Nombre de la Autora o Anónimo</cite>
-                    </blockquote>
+    <p id="featured-quote-text">Me siento increíblemente afortunada. Si no hubiera mencionado el sangrado y si mi doctora no hubiera actuado tan rápida y decididamente como lo hizo, el resultado habría sido muy distinto.</p>
+    <cite id="featured-quote-author">– ANA</cite>
+</blockquote>
                     <a href="historias-inspiran.html" class="cta-button">Lee más historias como esta</a>
                 </div>
             </section>
@@ -135,16 +135,31 @@
                 </div>
                 <div class="container">
                     <h2>Establecimientos Recomendados <span class="highlight"> Fórmula Triple Rosa</span></h2>
-                    <div class="collaborators-grid">
-                        <div class="collaborator-item"><a href="https://www.instagram.com/7islas7quesos/" target="_blank" rel="noopener noreferrer"><img src="images/7islas.png" alt="Logo 7 Islas 7 Quesos" class="logo-colaborador logo-7islas-grande"></a><p class="collaborator-name">7 Islas 7 Quesos</p></div>
-                        <div class="collaborator-item"><a href="https://www.instagram.com/orotavalenceriatf/" target="_blank" rel="noopener noreferrer"><img src="images/orotava.png" alt="Logo Orotava Lencería" class="logo-colaborador logo-7islas-grande"></a><p class="collaborator-name">Orotava Lencería</p></div>
-                        <div class="collaborator-item"><a href="https://www.instagram.com/alexisovalecosalon/" target="_blank" rel="noopener noreferrer"><img src="images/alexis.png" alt="Logo Alexis Oval Ecosalón" class="logo-colaborador logo-7islas-grande"></a><p class="collaborator-name">Alexis Oval Ecosalón</p></div>
+                    <div class="scroller-container">
+                        <button class="scroller__arrow scroller__arrow--left" aria-label="Colaborador anterior">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                        </button>
+                        <div class="scroller">
+                            <ul class="tag-list scroller__inner">
+                                <li><a href="https://www.instagram.com/7islas7quesos/" target="_blank" rel="noopener noreferrer" title="7 Islas 7 Quesos"><img src="images/7islas.png" alt="Logo 7 Islas 7 Quesos"></a></li>
+                                <li><a href="https://www.instagram.com/orotavalenceriatf/" target="_blank" rel="noopener noreferrer" title="Orotava Lencería"><img src="images/orotava.png" alt="Logo Orotava Lencería"></a></li>
+                                <li><a href="https://www.instagram.com/alexisovalecosalon/" target="_blank" rel="noopener noreferrer" title="Alexis Oval Ecosalón"><img src="images/alexis.png" alt="Logo Alexis Oval Ecosalón"></a></li>
+                                <li><a href="https://dualvafisioterapia.com/" target="_blank" rel="noopener noreferrer" title="Dualva Fisioterapia"><img src="images/dualva.png" alt="Logo Dualva Fisioterapia"></a></li>
+                                <li><a href="https://www.instagram.com/esencialauraluna/" target="_blank" rel="noopener noreferrer" title="Esencia Laura Luna"><img src="images/esencia.png" alt="Logo Esencia Laura Luna"></a></li>
+                                <li><a href="https://www.instagram.com/micropigmentacion.faynaperez/" target="_blank" rel="noopener noreferrer" title="Fayna Art. Micropigmentación"><img src="images/fayna.png" alt="Logo Fayna Art. Micropigmentación"></a></li>
+                                <li><a href="https://www.instagram.com/psicologa_lauramartinez?igsh=ZmlwdjRoMzJqbG5j" target="_blank" rel="noopener noreferrer" title="Psicóloga Laura Martínez"><img src="images/laura.png" alt="Logo Psicóloga Laura Martínez"></a></li>
+                                <li><a href="https://www.lingnaturalyoga.com/" target="_blank" rel="noopener noreferrer" title="Ling natural Yoga"><img src="images/ling.png" alt="Logo Ling natural Yoga"></a></li>
+                                <li><a href="https://www.instagram.com/salonmoussetenerife/" target="_blank" rel="noopener noreferrer" title="Mousse Salón de Coiffure"><img src="images/mousse.png" alt="Logo Mousse Salón de Coiffure"></a></li>
+                            </ul>
+                        </div>
+                        <button class="scroller__arrow scroller__arrow--right" aria-label="Siguiente colaborador">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                        </button>
                     </div>
                 </div>
             </section>
         </main>
         
-        <!-- El footer ahora está FUERA del main -->
         <footer id="final-section" class="final-cta-footer-section">
             <div class="container">
                 <h2>No estás <span class="highlight">sóla</span>. Únete a la familia de Fórmula Triple Rosa.</h2>
@@ -166,8 +181,7 @@
                         <img src="images/youtube.png" alt="Logo de YouTube">
                         <span>YouTube</span>
                     </a>
-                </div>                <!-- Contador de Visitas -->
-                <div id="visitor-counter" title="Visitas a la web">
+                </div>                <div id="visitor-counter" title="Visitas a la web">
                     <span class="heart-icon">❤️</span>
                     <span id="visit-count-display">Cargando...</span>
                 </div>
@@ -186,9 +200,7 @@
                 <div id="youtubePlayerContainer"></div>
             </div>
         </div>
-    </div> <!-- Cierre de .site-wrapper -->
-
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    </div> <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-check-compat.js"></script>
     <script src="scripts.js"></script>

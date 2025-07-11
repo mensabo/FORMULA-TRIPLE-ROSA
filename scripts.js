@@ -5,8 +5,19 @@ document.addEventListener('DOMContentLoaded', () => {
     setupMainMenu();
     setupScrollTopButton();
     setupVideoModal();
+    setupSpotifyModal(); // <--- LLAMADA A LA FUNCIÓN DE SPOTIFY
     if (typeof AOS !== 'undefined') {
         AOS.init({ once: true, duration: 800 });
+    }
+
+    // Lógica que no depende de Firebase se ejecuta inmediatamente
+    if (document.querySelector('.scroller-container')) {
+        setupEnhancedScroller();
+    }
+    
+    const pagePath = window.location.pathname.split('/').pop();
+    if (pagePath.includes('bienestar')) {
+        setupAffirmationGenerator();
     }
 
     // --- 2. LÓGICA QUE REQUIERE FIREBASE ---
@@ -20,18 +31,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (document.getElementById('stories-list-container')) setupHistoriasInspiranPage();
         if (document.getElementById('storyDetailContentArticle')) setupHistoriaDetallePage();
         if (document.getElementById('interviews-list-container')) setupEntrevistasPage();
-        if (document.getElementById('hopeMessageForm')) setupMuroEsperanzaPage();
+        if (document.getElementById('hope-wall-container')) setupMuroEsperanzaPage();
         if (document.getElementById('featured-story')) setupFeaturedStory();
 
         // Llamada al contador de visitas
         handleVisitorCount();
     });
-
-    // --- 3. LÓGICA ESPECÍFICA SIN FIREBASE ---
-    const pagePath = window.location.pathname.split('/').pop();
-    if (pagePath.includes('bienestar')) {
-        setupAffirmationGenerator();
-    }
 });
 
 // ===================================================================
@@ -128,6 +133,60 @@ function setupVideoModal() {
 }
 
 // ===================================================================
+// ===== LÓGICA PARA EL MODAL DE SPOTIFY ============================
+// ===================================================================
+function setupSpotifyModal() {
+    const spotifyModal = document.getElementById('spotifyModal');
+    if (!spotifyModal) return;
+
+    const spotifyTrigger = document.getElementById('spotify-trigger');
+    const spotifyModalCloseButton = document.querySelector('.spotify-modal-close-button');
+    const spotifyPlayerContainer = document.getElementById('spotifyPlayerContainer');
+    const spotifyPlaylistUrl = "https://open.spotify.com/embed/playlist/2UjIavfNeZdGAZHWqF2px1?utm_source=generator&theme=0";
+
+    function openModal() {
+        if (!spotifyPlayerContainer) return;
+        
+        const spotifyIframe = document.createElement('iframe');
+        spotifyIframe.style.borderRadius = "12px";
+        spotifyIframe.src = spotifyPlaylistUrl;
+        spotifyIframe.width = "100%";
+        spotifyIframe.height = "100%";
+        spotifyIframe.frameBorder = "0";
+        spotifyIframe.allow = "autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture";
+        spotifyIframe.loading = "lazy";
+        
+        spotifyPlayerContainer.innerHTML = '';
+        spotifyPlayerContainer.appendChild(spotifyIframe);
+        spotifyModal.style.display = "flex";
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+        spotifyModal.style.display = "none";
+        spotifyPlayerContainer.innerHTML = ''; // Limpiamos el iframe para detener la música
+        document.body.style.overflow = 'auto';
+    }
+
+    if (spotifyTrigger) {
+        spotifyTrigger.addEventListener('click', (event) => {
+            event.preventDefault();
+            openModal();
+        });
+    }
+
+    if (spotifyModalCloseButton) spotifyModalCloseButton.addEventListener('click', closeModal);
+    
+    spotifyModal.addEventListener('click', (event) => {
+        if (event.target === spotifyModal) closeModal();
+    });
+    
+    document.addEventListener('keydown', (event) => {
+        if (event.key === "Escape" && spotifyModal.style.display === "flex") closeModal();
+    });
+}
+
+// ===================================================================
 // ===== INICIALIZACIÓN DE FIREBASE Y FUNCIONES RELACIONADAS =======
 // ===================================================================
 
@@ -147,7 +206,6 @@ async function initializeFirebaseAndAppCheck() {
     try {
         const app = firebase.initializeApp(firebaseConfig);
         
-        // MODO DEBUG PARA DESARROLLO LOCAL
         window.FIREBASE_APPCHECK_DEBUG_TOKEN = false;
 
         if (firebase.appCheck) {
@@ -345,8 +403,7 @@ async function setupEntrevistasPage() {
 
 function setupMuroEsperanzaPage() {
     const form = document.getElementById('hopeMessageForm');
-    const grid = document.querySelector('.hope-wall-grid');
-    if (!form || !grid || !dbInstance) return;
+    if (!form || !dbInstance) return;
 
     const textEl = form.querySelector('#mensajeTexto');
     const counterEl = form.querySelector('#charCounter');
@@ -386,27 +443,34 @@ function setupMuroEsperanzaPage() {
         }
     });
 
-    const loadingEl = grid.querySelector('.loading-messages');
-    const noMessagesEl = grid.querySelector('.no-messages:not(.error)');
-    const errorEl = grid.querySelector('.no-messages.error');
-    loadingEl.style.display = 'block';
-    noMessagesEl.style.display = 'none';
-    errorEl.style.display = 'none';
+    const container = document.getElementById('hope-wall-container');
+    const loadingEl = container.querySelector('.loading-messages');
+    const noMessagesEl = container.querySelector('.no-messages:not(.error)');
+    const errorEl = container.querySelector('.no-messages.error');
 
-    dbInstance.collection('mensajesEsperanza').where('aprobado', '==', true).orderBy('timestamp', 'desc').onSnapshot(snapshot => {
+    dbInstance.collection('mensajesEsperanza').where('aprobado', '==', true).orderBy('timestamp', 'desc')
+      .onSnapshot(snapshot => {
         loadingEl.style.display = 'none';
-        grid.querySelectorAll('.hope-message-card').forEach(el => el.remove());
+        container.querySelectorAll('.hope-note').forEach(el => el.remove());
+        
         if (snapshot.empty) {
             noMessagesEl.style.display = 'block';
         } else {
+            let colorIndex = 1;
             snapshot.forEach(doc => {
                 const data = doc.data();
-                const card = document.createElement('article');
-                card.className = 'hope-message-card';
-                card.innerHTML = `
-                    <p class="message-text">${escapeHTML(data.texto).replace(/\n/g, '<br>')}</p>
-                    <p class="message-author">- <span class="author-icon">💌</span> ${escapeHTML(data.autor)}</p>`;
-                grid.appendChild(card);
+                const note = document.createElement('div');
+                
+                note.className = `hope-note color-${colorIndex}`;
+                
+                note.innerHTML = `
+                    <p class="message-text">${escapeHTML(data.texto)}</p>
+                    <p class="message-author">- ${escapeHTML(data.autor)}</p>
+                `;
+                
+                container.appendChild(note);
+                
+                colorIndex = (colorIndex % 5) + 1;
             });
         }
     }, error => {
@@ -429,12 +493,17 @@ async function setupFeaturedStory() {
         const items = [];
         storySnapshot.forEach(doc => items.push(doc.data()));
         messageSnapshot.forEach(doc => items.push(doc.data()));
+
         if (items.length > 0) {
             const randomItem = items[Math.floor(Math.random() * items.length)];
-            const text = randomItem.contenido ?
+            
+            let originalText = randomItem.contenido ?
                 (randomItem.contenido.length > 200 ? randomItem.contenido.substring(0, 200) + '...' : randomItem.contenido) :
                 randomItem.texto;
-            quoteTextEl.textContent = `“${escapeHTML(text)}”`;
+
+            let cleanText = originalText.trim().replace(/^"|"$|^“|”$/g, '').trim();
+
+            quoteTextEl.textContent = escapeHTML(cleanText);
             quoteAuthorEl.textContent = `– ${escapeHTML(randomItem.autor)}`;
         }
     } catch (error) {
@@ -502,4 +571,114 @@ function formatDate(timestamp) {
         console.error("Error formateando la fecha:", e);
         return "Fecha inválida";
     }
+}
+
+/* =================================================================== */
+/* == LÓGICA PARA EL CARRUSEL INFINITO (CON FLECHAS Y CONTROL JS) == */
+/* =================================================================== */
+
+function setupEnhancedScroller() {
+    const scrollerContainer = document.querySelector(".scroller-container");
+    if (!scrollerContainer) return;
+
+    const scroller = scrollerContainer.querySelector(".scroller");
+    const scrollerInner = scroller.querySelector(".scroller__inner");
+    const leftArrow = scrollerContainer.querySelector(".scroller__arrow--left");
+    const rightArrow = scrollerContainer.querySelector(".scroller__arrow--right");
+
+    // Prevenir ejecución si no hay elementos
+    if (!scrollerInner || !scrollerInner.children.length) return;
+
+    // 1. Duplicar contenido para bucle infinito
+    const scrollerContent = Array.from(scrollerInner.children);
+    scrollerContent.forEach(item => {
+        const duplicatedItem = item.cloneNode(true);
+        duplicatedItem.setAttribute("aria-hidden", true);
+        scrollerInner.appendChild(duplicatedItem);
+    });
+    
+    scroller.setAttribute("data-animated", "true");
+
+    let currentScroll = 0;
+    let animationFrameId;
+    let isPaused = false;
+    let userInteractionTimeout;
+
+    const scrollSpeed = 0.5; // Píxeles por frame
+    const scrollAmountOnClick = scrollerInner.firstElementChild.offsetWidth + parseFloat(getComputedStyle(scrollerInner).gap);
+
+
+    // 2. Lógica de la animación automática
+    const autoScroll = () => {
+        if (isPaused) return;
+
+        currentScroll -= scrollSpeed;
+        
+        // Si hemos scrolleado la mitad del contenido (la parte original), reseteamos
+        if (Math.abs(currentScroll) >= scrollerInner.scrollWidth / 2) {
+            currentScroll = 0;
+        }
+        scrollerInner.style.transform = `translateX(${currentScroll}px)`;
+
+        animationFrameId = requestAnimationFrame(autoScroll);
+    };
+    
+    const startAnimation = () => {
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+        cancelAnimationFrame(animationFrameId); // Prevenir múltiples bucles
+        animationFrameId = requestAnimationFrame(autoScroll);
+    };
+
+    const pauseAnimation = () => {
+        isPaused = true;
+        cancelAnimationFrame(animationFrameId);
+    };
+    
+    const resumeAnimation = () => {
+        isPaused = false;
+        startAnimation();
+    };
+
+    // 3. Manejo de eventos
+    scrollerContainer.addEventListener("mouseenter", pauseAnimation);
+    scrollerContainer.addEventListener("mouseleave", () => {
+        clearTimeout(userInteractionTimeout);
+        resumeAnimation();
+    });
+    
+    // Para accesibilidad con teclado
+    scrollerContainer.addEventListener("focusin", pauseAnimation);
+    scrollerContainer.addEventListener("focusout", resumeAnimation);
+
+    const handleArrowClick = (direction) => {
+        pauseAnimation();
+        clearTimeout(userInteractionTimeout);
+
+        // Mover el carrusel
+        currentScroll += direction * scrollAmountOnClick;
+
+        // Limitar el scroll para evitar saltos bruscos
+        const maxScroll = -(scrollerInner.scrollWidth / 2);
+        if (currentScroll > 0) currentScroll = maxScroll + (currentScroll % maxScroll);
+        if (currentScroll < maxScroll) currentScroll = currentScroll % maxScroll;
+
+        scrollerInner.style.transition = 'transform 0.4s ease-out';
+        scrollerInner.style.transform = `translateX(${currentScroll}px)`;
+
+        // Reiniciar la animación automática después de un tiempo
+        userInteractionTimeout = setTimeout(() => {
+            scrollerInner.style.transition = 'none'; // Quitar transición para el auto-scroll
+            resumeAnimation();
+        }, 3000); // 3 segundos
+    };
+    
+    scrollerInner.addEventListener('transitionend', () => {
+        scrollerInner.style.transition = 'none';
+    });
+    
+    leftArrow.addEventListener("click", () => handleArrowClick(1));
+    rightArrow.addEventListener("click", () => handleArrowClick(-1));
+    
+    // Iniciar la animación
+    startAnimation();
 }

@@ -25,23 +25,23 @@
         <header class="hero-section hero-section-internal-banner hero-section-calma">
             <div class="hero-banner-image-container calma-banner-bg">
                 <nav class="main-nav">
-    <a href="index.html" class="nav-logo-link">
-        <img src="images/logo-nav.png" alt="Fórmula Triple Rosa Logo" class="nav-logo">
-    </a>
-    <div class="container">
-        <ul class="nav-links">
-            <li><a href="index.html">Inicio</a></li>
-            <li><a href="proyecto.html">El Proyecto</a></li>
-            <li><a href="recursos.html">Recursos</a></li>
-            <li><a href="entrevistas.html">Entrevistas</a></li>
-            <li><a href="bienestar.html">Rincón de la Calma</a></li>
-            <li><a href="historias-inspiran.html">Historias</a></li>
-            <li><a href="muro-esperanza.html">Muro Esperanza</a></li>
-            <li><a href="index.html#colaboradores">Colaboran</a></li>
-        </ul>
-        <div class="menu-toggle" id="mobile-menu"><span></span><span></span><span></span></div>
-    </div>
-</nav>
+                    <a href="index.html" class="nav-logo-link">
+                        <img src="images/logo-nav.png" alt="Fórmula Triple Rosa Logo" class="nav-logo">
+                    </a>
+                    <div class="container">
+                        <ul class="nav-links">
+                            <li><a href="index.html">Inicio</a></li>
+                            <li><a href="proyecto.html">El Proyecto</a></li>
+                            <li><a href="recursos.html">Recursos</a></li>
+                            <li><a href="entrevistas.html">Entrevistas</a></li>
+                            <li><a href="bienestar.html">Rincón de la Calma</a></li>
+                            <li><a href="historias-inspiran.html">Historias</a></li>
+                            <li><a href="muro-esperanza.html">Muro Esperanza</a></li>
+                            <li><a href="index.html#colaboradores">Colaboran</a></li>
+                        </ul>
+                        <div class="menu-toggle" id="mobile-menu"><span></span><span></span><span></span></div>
+                    </div>
+                </nav>
                 <div class="hero-text-overlay">
                     <div class="container">
                         <h1 data-aos="fade-down">Rincón de la <span class="highlight">Calma</span></h1>
@@ -61,16 +61,21 @@
                         </p>
                     </div>
                     <div class="resource-grid">
-                        <a href="#" class="resource-card resource-card--video" data-video-id="inpok4MKVLM" data-aos="zoom-in-up">
-                            <div class="resource-card-thumbnail" style="background-image: url('https://i.ytimg.com/vi/inpok4MKVLM/hqdefault.jpg');">
-                                <div class="play-icon-overlay">▶</div>
+                        
+                        <!-- ==== INICIO DE LA TARJETA MODIFICADA ==== -->
+                        <div class="proximamente-wrapper" data-aos="zoom-in-up">
+                            <div class="resource-card resource-card--proximamente">
+                                <div class="resource-card-thumbnail" style="background-image: url('images/zen.png');">
+                                    <!-- El icono de play ha sido eliminado -->
+                                </div>
+                                <div class="resource-card-content">
+                                    <div class="resource-icon">🧘‍♀️</div>
+                                    <h3>Meditación Guiada</h3>
+                                    <p>Un recurso muy especial que estará disponible muy pronto para ti.</p>
+                                </div>
                             </div>
-                            <div class="resource-card-content">
-                                <div class="resource-icon">🧘‍♀️</div>
-                                <h3>Meditación Guiada</h3>
-                                <p>Una meditación de 5 minutos para encontrar tu centro y calmar la mente.</p>
-                            </div>
-                        </a>
+                        </div>
+                        <!-- ==== FIN DE LA TARJETA MODIFICADA ==== -->
                         
                         <a href="#" class="resource-card resource-card--video" data-video-id="os6FiWw1kNM" data-aos="zoom-in-up" data-aos-delay="100">
                             <div class="resource-card-thumbnail" style="background-image: url('images/hablate-con-amor.png');">
@@ -83,21 +88,24 @@
                             </div>
                         </a>
 
-                        <a href="#" class="resource-card resource-card--video" data-video-id="lFcOqY9gC-g" data-aos="zoom-in-up" data-aos-delay="200">
-                            <div class="resource-card-thumbnail" style="background-image: url('https://i.ytimg.com/vi/lFcOqY9gC-g/hqdefault.jpg');">
-                                <div class="play-icon-overlay">▶</div>
+                        <!-- ==== TARJETA DE SPOTIFY CON ESTILO CORREGIDO ==== -->
+                        <a href="#" class="resource-card resource-card--spotify" id="spotify-trigger" data-aos="zoom-in-up" data-aos-delay="200">
+                             <div class="resource-card-thumbnail" style="background-image: url('images/spotify-relax.png');">
+                                <div class="play-icon-overlay">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10 10-4.486 10-10S17.514 2 12 2zm0 18c-4.411 0-8-3.589-8-8s3.589-8 8-8 8 3.589 8 8-3.589 8-8 8z"></path><path d="M8.528 16.528A.996.996 0 0 1 8 16.321c-.221-.129-.358-.363-.358-.618V8.297c0-.255.137-.489.358-.618a1 1 0 0 1 1.05.056l6.386 3.703a1 1 0 0 1 0 1.732l-6.386 3.703a.999.999 0 0 1-.522.155z"></path></svg>
+                                </div>
                             </div>
                             <div class="resource-card-content">
                                 <div class="resource-icon">🎶</div>
-                                <h3>Música Relajante</h3>
-                                <p>Melodías suaves para acompañarte en tus momentos de descanso.</p>
+                                <h3>Playlist Relajante</h3>
+                                <p>Melodías suaves para acompañarte en tus momentos de descanso. Conectado a Spotify.</p>
                             </div>
                         </a>
                     </div>
                    <div class="affirmation-box" data-aos="fade-in" data-aos-delay="300">
-    <h4>Un Mensaje para Ti:</h4>
-    <p id="affirmationText">Cargando afirmación...</p>
-</div>
+                        <h4>Un Mensaje para Ti:</h4>
+                        <p id="affirmationText">Cargando afirmación...</p>
+                    </div>
                 </div>
             </section>
         </main>
@@ -124,21 +132,20 @@
                         <span>YouTube</span>
                     </a>
                 </div>
-                                               <!-- Contador de Visitas -->
+                <!-- Contador de Visitas -->
                 <div id="visitor-counter" title="Visitas a la web">
                     <span class="heart-icon">❤️</span>
                     <span id="visit-count-display">Cargando...</span>
                 </div>
-
                 <p class="copyright-text">
                     © 2024 Fórmula Triple Rosa por Yaiza Diaz. Con todo mi cariño y apoyo.
                 </p>
-                
             </div>
         </footer>
 
         <a href="#" id="scrollTopButton" class="scroll-top-button" aria-label="Volver arriba"><img src="images/icono-scroll-rosa-transparente.png" alt="Icono volver arriba" class="scroll-top-icon"></a>
 
+        <!-- Modal para vídeos de YouTube -->
         <div id="videoModal" class="video-modal">
             <div class="video-modal-content">
                 <span class="video-modal-close-button">×</span>
@@ -146,6 +153,13 @@
             </div>
         </div>
 
+        <!-- ==== NUEVO MODAL PARA SPOTIFY ==== -->
+        <div id="spotifyModal" class="spotify-modal">
+            <div class="spotify-modal-content">
+                <span class="spotify-modal-close-button">×</span>
+                <div id="spotifyPlayerContainer"></div>
+            </div>
+        </div>
     </div>
 
     <!-- BLOQUE DE SCRIPTS CON EL ORDEN CORRECTO -->
