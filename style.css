@@ -1991,8 +1991,9 @@ header.hero-section-entrevistas .hero-text-overlay .container {
     display: none;
 }
 
+/* --- Sección Historia Personal --- */
 .project-story-section {
-    background-color: #ffffff;
+    background-color: var(--bg-light); /* <-- CAMBIADO A LA VARIABLE DE COLOR ROSADO CLARO */
     padding: 80px 0;
 }
 
@@ -3340,4 +3341,24 @@ textarea:focus-visible {
   transform: none;
   box-shadow: 0 6px 20px rgba(var(--pink-primary-rgb), 0.07);
   border-top-color: transparent;
+}/* ======================================================================== */
+/* == AJUSTE RESPONSIVE PARA CITA DESTACADA EN MÓVILES ================== */
+/* ======================================================================== */
+
+/* En pantallas de 768px de ancho o menos (móviles y tablets pequeñas) */
+@media (max-width: 768px) {
+  .featured-quote {
+    padding: 40px 25px; /* Reducimos un poco el espaciado interno */
+  }
+
+  /* Reducimos el tamaño del corazón de fondo */
+  .featured-quote::before {
+    font-size: 18rem; /* Tamaño del corazón más pequeño */
+    opacity: 0.6; /* Lo hacemos un poco más transparente */
+  }
+
+  /* Ajustamos el tamaño del texto de la cita para que se lea mejor */
+  #featured-quote-text {
+    font-size: clamp(1.5rem, 5vw, 2rem);
+  }
 }
